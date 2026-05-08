@@ -1,0 +1,288 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Admin {
+  id       String @id @default(uuid())
+  username String @unique
+  password String
+}
+
+model Category {
+  id              String        @id @default(uuid())
+  name            String
+  slug            String        @unique
+  icon            String        @default("")
+  order           Int           @default(0)
+  metaTitle       String        @default("")
+  metaDescription String        @default("")
+  seoText         String        @default("")
+  parentId        String?
+  parent          Category?     @relation("CategoryChildren", fields: [parentId], references: [id])
+  children        Category[]    @relation("CategoryChildren")
+  products        Product[]
+}
+
+model Product {
+  id          String         @id @default(uuid())
+  name        String
+  slug        String         @unique
+  description String         @default("")
+  price       Float          @default(0)
+  oldPrice    Float?
+  image       String         @default("")
+  image2      String         @default("")
+  image3      String         @default("")
+  image4      String         @default("")
+  inStock     Int            @default(0)
+  brand       String         @default("")
+  color       String         @default("")
+  productType String         @default("")
+  country     String         @default("")
+  barcode     String         @default("")
+  code        String         @default("")
+  weight      Float?
+  volume      Float?
+  packSize    Int?
+  expirationDate String      @default("")
+  isFeatured  Boolean        @default(false)
+  categoryId  String
+  category    Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  reviews     Review[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model SliderImage {
+  id       String  @id @default(uuid())
+  title    String  @default("")
+  subtitle String  @default("")
+  imageUrl String
+  link     String  @default("")
+  order    Int     @default(0)
+  active   Boolean @default(true)
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  password     String
+  name         String        @default("")
+  lastName     String        @default("")
+  phone        String        @default("")
+  address      String        @default("")
+  zipCode      String        @default("")
+  region       String        @default("")
+  city         String        @default("")
+  street       String        @default("")
+  building     String        @default("")
+  apartment    String        @default("")
+  resetToken   String?
+  resetExpires DateTime?
+  cart         CartItem[]
+  orders       Order[]
+  reviews      Review[]
+  wishlist     WishlistItem[]
+  stockAlerts  StockAlert[]
+  createdAt    DateTime      @default(now())
+}
+
+model CartItem {
+  id        String  @id @default(uuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int     @default(1)
+  isPack    Boolean @default(false)
+
+  @@unique([userId, productId, isPack])
+}
+
+model Order {
+  id           String      @id @default(uuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status       String      @default("new")
+  total        Float
+  name         String      @default("")
+  phone        String      @default("")
+  address      String      @default("")
+  comment      String      @default("")
+  trackNumber  String      @default("")
+  trackUrl     String      @default("")
+  promoCode    String      @default("")
+  discount     Float       @default(0)
+  items        OrderItem[]
+  messages     Message[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+  price     Float
+}
+
+model News {
+  id        String   @id @default(uuid())
+  title     String
+  slug      String   @unique
+  excerpt   String   @default("")
+  content   String   @default("")
+  image     String   @default("")
+  type      String   @default("article")
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SitePage {
+  id        String   @id @default(uuid())
+  slug      String   @unique
+  title     String   @default("")
+  content   String   @default("")
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int      @default(5)
+  text      String   @default("")
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  senderId   String
+  senderRole String   @default("user")
+  text       String
+  createdAt  DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model PageView {
+  id        String   @id @default(uuid())
+  path      String
+  date      String
+  visitorId String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([date])
+  @@index([path])
+  @@index([visitorId])
+}
+
+model WishlistItem {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([userId])
+}
+
+model PromoCode {
+  id            String   @id @default(uuid())
+  code          String   @unique
+  discountType  String   @default("percent")
+  discountValue Float    @default(0)
+  minOrder      Float    @default(0)
+  maxUses       Int      @default(0)
+  usedCount     Int      @default(0)
+  active        Boolean  @default(true)
+  expiresAt     DateTime?
+  createdAt     DateTime @default(now())
+}
+
+model StockAlert {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  notified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([productId])
+}
+
+model QuickOrder {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String
+  productId String
+  productName String @default("")
+  quantity  Int      @default(1)
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
+
+model CallbackRequest {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
+
+model EmailVerification {
+  id        String   @id @default(uuid())
+  email     String
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model SiteSettings {
+  id               String @id @default("main")
+  siteName         String @default("Мой магазин")
+  siteDescription  String @default("Интернет-магазин товаров")
+  siteKeywords     String @default("")
+  logoUrl          String @default("")
+  faviconUrl       String @default("")
+  phone            String @default("")
+  email            String @default("")
+  emailWholesale   String @default("")
+  emailSuppliers   String @default("")
+  address          String @default("")
+  workingHours     String @default("ПН-ПТ с 09:00 до 18:00")
+  pickupAddress    String @default("")
+  pickupHours      String @default("")
+  socialTelegram   String @default("")
+  socialVk         String @default("")
+  socialWhatsapp   String @default("")
+  colorPrimary     String @default("#e94560")
+  colorAccent      String @default("#f59e0b")
+  colorDanger      String @default("#ef4444")
+  colorSuccess     String @default("#22c55e")
+  colorBgLight     String @default("#f8f9fa")
+  ogTitle          String @default("")
+  ogDescription    String @default("")
+  footerText       String @default("")
+  packDiscount     Int    @default(10)
+  freeDeliveryFrom Int    @default(5000)
+  updatedAt        DateTime @updatedAt
+}
