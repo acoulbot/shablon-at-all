@@ -9,16 +9,16 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Оптовые продажи — ТОПХИТ",
-  description: "Оптовые поставки от ТОПХИТ — специальные цены для ООО, ИП и физлиц. Скидки от 5% до 20%, доставка по Москве, МО и России. Самовывоз со склада.",
+  title: "Оптовые продажи вейп-продукции — VapeLabHIT",
+  description: "Оптовые поставки вейп-продукции от VapeLabHIT — специальные цены для ООО, ИП и физлиц. Скидки от 5% до 20%, доставка по России.",
   openGraph: {
-    title: "Оптовые продажи — ТОПХИТ",
-    description: "Выгодные условия оптовых поставок для бизнеса",
+    title: "Оптовые продажи вейп-продукции — VapeLabHIT",
+    description: "Выгодные условия оптовых поставок вейп-продукции для бизнеса",
     locale: "ru_RU",
     type: "website",
-    url: "https://tophitt.ru/wholesale",
+    url: "https://vapelabhit.ru/wholesale",
   },
-  alternates: { canonical: "https://tophitt.ru/wholesale" },
+  alternates: { canonical: "https://vapelabhit.ru/wholesale" },
 };
 
 export default async function WholesalePage() {
@@ -43,8 +43,8 @@ export default async function WholesalePage() {
               <div className="bg-primary rounded-xl p-4 sm:p-6 md:p-8 text-white mb-6 sm:mb-8">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 sm:mb-3">Выгодные условия для бизнеса</h2>
                 <p className="text-white/80 text-xs sm:text-sm md:text-base">
-                  ТОПХИТ предлагает специальные условия для юридических лиц и индивидуальных предпринимателей.
-                  Широкий ассортимент товаров по оптовым ценам с доставкой по Москве и МО.
+                  VapeLabHIT предлагает специальные условия для юридических лиц и индивидуальных предпринимателей.
+                  Широкий ассортимент вейп-продукции по оптовым ценам с доставкой по России.
                 </p>
               </div>
 
@@ -220,11 +220,11 @@ export default async function WholesalePage() {
                 </svg>
                 +7 (936) 256-89-50
               </a>
-              <a href="mailto:opt@tophitt.ru" className="flex items-center gap-2 text-primary font-bold hover:underline">
+              <a href="mailto:opt@vapelabhit.ru" className="flex items-center gap-2 text-primary font-bold hover:underline">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                opt@tophitt.ru
+                opt@vapelabhit.ru
               </a>
             </div>
             <div className="mt-4">

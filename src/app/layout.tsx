@@ -18,21 +18,21 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://tophitt.ru"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://vapelabhit.ru"),
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
     yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION || "",
   },
-  title: "ТОПХИТ — Товары оптом и в розницу по ценам от производителя",
-  description: "Интернет-магазин ТОПХИТ — продукты, бытовая химия, товары для дома оптом и в розницу. Скидка 10% при покупке упаковкой. Доставка по Москве и МО, самовывоз со склада.",
-  keywords: "интернет-магазин, ТОПХИТ, товары оптом, розница, продукты, бытовая химия, доставка Москва, скидки",
+  title: "VapeLabHIT — Испарители, картриджи, аккумуляторы и аксессуары для вейпа",
+  description: "Интернет-магазин VapeLabHIT — испарители, картриджи для вейпа, аккумуляторы, зарядные устройства, powerbank Walker, шнуры и вата. Доставка по России.",
+  keywords: "вейп, испарители, картриджи, аккумуляторы, батарейки, зарядные устройства, powerbank Walker, вата, VapeLabHIT, вейп-шоп",
   openGraph: {
-    title: "ТОПХИТ — Товары оптом и в розницу по ценам от производителя",
-    description: "Продукты, бытовая химия, товары для дома — от 1 штуки или упаковками со скидкой 10%. Доставка по Москве и МО.",
+    title: "VapeLabHIT — Испарители, картриджи, аккумуляторы и аксессуары для вейпа",
+    description: "Испарители, картриджи для вейпа, аккумуляторы и батарейки, зарядные устройства, powerbank Walker, шнуры и вата. Доставка по России.",
     locale: "ru_RU",
     type: "website",
-    siteName: "ТОПХИТ",
-    url: "https://tophitt.ru",
+    siteName: "VapeLabHIT",
+    url: process.env.NEXT_PUBLIC_BASE_URL || "https://vapelabhit.ru",
   },
   alternates: {
     canonical: "/",
@@ -51,6 +51,8 @@ export const metadata: Metadata = {
   },
 };
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://vapelabhit.ru";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -59,36 +61,42 @@ export default function RootLayout({
   return (
     <html lang="ru" className={`h-full antialiased ${inter.variable} ${manrope.variable}`}>
       <head>
-        {/* Google Analytics */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTTS4HE5R3" />
-        <script dangerouslySetInnerHTML={{ __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-GTTS4HE5R3')` }} />
-        {/* Yandex.Metrika */}
-        <script dangerouslySetInnerHTML={{ __html: `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=109025489','ym');ym(109025489,'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:"dataLayer",accurateTrackBounce:true,trackLinks:true})` }} />
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} />
+            <script dangerouslySetInnerHTML={{ __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${process.env.NEXT_PUBLIC_GA_ID}')` }} />
+          </>
+        )}
+        {process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID && (
+          <>
+            <script dangerouslySetInnerHTML={{ __html: `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=${process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID}','ym');ym(${process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID},'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:"dataLayer",accurateTrackBounce:true,trackLinks:true})` }} />
+          </>
+        )}
       </head>
       <body className="min-h-full flex flex-col overflow-x-hidden">
-        <noscript>
-          <div><img src="https://mc.yandex.ru/watch/109025489" style={{ position: "absolute", left: "-9999px" }} alt="" /></div>
-        </noscript>
+        {process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID && (
+          <noscript>
+            <div><img src={`https://mc.yandex.ru/watch/${process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID}`} style={{ position: "absolute", left: "-9999px" }} alt="" /></div>
+          </noscript>
+        )}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              name: "ТОПХИТ",
-              url: "https://tophitt.ru",
-              logo: "https://tophitt.ru/logo.png",
+              name: "VapeLabHIT",
+              url: BASE_URL,
+              logo: `${BASE_URL}/logo.jpg`,
               contactPoint: {
                 "@type": "ContactPoint",
-                telephone: "+7-936-256-89-50",
+                telephone: "+7-XXX-XXX-XX-XX",
                 contactType: "customer service",
                 areaServed: "RU",
                 availableLanguage: "Russian",
               },
               sameAs: [
-                "https://t.me/tophit_store",
-                "https://vk.com/tophit_market",
-                "https://www.ozon.ru/seller/tophit/",
+                "https://t.me/vapelabhit",
               ],
             }),
           }}
@@ -99,28 +107,21 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
-              name: "ТОПХИТ",
-              image: "https://tophitt.ru/logo.png",
-              url: "https://tophitt.ru",
-              telephone: "+7-936-256-89-50",
-              email: "zakaz@tophitt.ru",
+              name: "VapeLabHIT",
+              image: `${BASE_URL}/logo.jpg`,
+              url: BASE_URL,
+              telephone: "+7-XXX-XXX-XX-XX",
+              email: "info@vapelabhit.ru",
               address: {
                 "@type": "PostalAddress",
-                streetAddress: "ул. Складочная, д. 1, стр. 18",
                 addressLocality: "Москва",
-                postalCode: "127018",
                 addressCountry: "RU",
-              },
-              geo: {
-                "@type": "GeoCoordinates",
-                latitude: 55.8025,
-                longitude: 37.5937,
               },
               openingHoursSpecification: {
                 "@type": "OpeningHoursSpecification",
-                dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-                opens: "09:00",
-                closes: "18:00",
+                dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+                opens: "10:00",
+                closes: "22:00",
               },
               priceRange: "₽₽",
             }),

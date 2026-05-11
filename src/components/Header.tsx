@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Ripple from "./Ripple";
 
@@ -129,14 +129,14 @@ export default function Header() {
   return (
     <header className="bg-bg-white shadow-sm">
       {/* Top bar */}
-      <div className="bg-primary text-white">
+      <div className="bg-gradient-to-r from-primary-dark via-primary to-primary-dark text-white">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between text-[11px] sm:text-sm">
           <div className="flex items-center gap-2 sm:gap-4">
-            <span>ПН-ПТ 09:00–18:00</span>
-            <span className="hidden sm:inline">СБ-ВС: Выходной</span>
+            <span>ПН-ВС 10:00–22:00</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
-            <span>Москва и МО</span>
+            <span className="hidden sm:inline">Доставка по всей России</span>
+            <span>VapeLabHIT</span>
           </div>
         </div>
       </div>
@@ -147,10 +147,10 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <div className="flex items-center gap-2 sm:gap-3">
-              <Image src="/logo.png" alt="ТОПХИТ" width={56} height={56} className="w-10 h-10 sm:w-14 sm:h-14 drop-shadow-md" />
+              <Image src="/logo.jpg" alt="VapeLabHIT" width={56} height={56} className="w-10 h-10 sm:w-14 sm:h-14 drop-shadow-md rounded-lg" />
               <div>
-                <h1 className="text-xl sm:text-2xl font-extrabold text-primary leading-tight font-heading tracking-tight">ТОПХИТ</h1>
-                <p className="text-[10px] sm:text-xs text-text-gray leading-tight tracking-wide">интернет-магазин</p>
+                <h1 className="text-xl sm:text-2xl font-extrabold leading-tight font-heading tracking-tight gradient-text">VapeLabHIT</h1>
+                <p className="text-[10px] sm:text-xs text-text-gray leading-tight tracking-wide">vape-магазин</p>
               </div>
             </div>
           </Link>
@@ -187,7 +187,7 @@ export default function Header() {
                         {item.image ? (
                           <Image src={getImageSrc(item.image)} alt="" fill className="object-contain p-1" />
                         ) : (
-                          <span className="flex items-center justify-center h-full text-text-light text-xs">📦</span>
+                          <span className="flex items-center justify-center h-full text-text-light text-xs">💨</span>
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -303,33 +303,28 @@ export default function Header() {
 
             <nav className="mt-3 flex flex-col">
               <Link href="/catalog" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg font-medium transition-colors" onClick={() => setMenuOpen(false)}>Каталог</Link>
-              <Link href="/wholesale" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg transition-colors" onClick={() => setMenuOpen(false)}>Оптовые продажи</Link>
-              <Link href="/news" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg transition-colors" onClick={() => setMenuOpen(false)}>Новости</Link>
-              <Link href="/about#delivery" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg transition-colors" onClick={() => setMenuOpen(false)}>Доставка</Link>
-              <Link href="/about" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg transition-colors" onClick={() => setMenuOpen(false)}>О компании</Link>
-              <Link href="/about#contacts" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg transition-colors" onClick={() => setMenuOpen(false)}>Контакты</Link>
-              <div className="border-t border-border my-2" />
-              <Link href="/wishlist" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg transition-colors" onClick={() => setMenuOpen(false)}>Избранное</Link>
-              <Link href="/compare" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg transition-colors" onClick={() => setMenuOpen(false)}>Сравнение</Link>
-              <Link href="/cart" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg transition-colors" onClick={() => setMenuOpen(false)}>Корзина</Link>
-              <Link href="/account" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg transition-colors" onClick={() => setMenuOpen(false)}>{userLabel || "Вход / Кабинет"}</Link>
-              <div className="border-t border-border my-2" />
+              <Link href="/wholesale" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg font-medium transition-colors" onClick={() => setMenuOpen(false)}>Оптовым клиентам</Link>
+              <Link href="/about" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg font-medium transition-colors" onClick={() => setMenuOpen(false)}>О компании</Link>
+              <Link href="/news" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg font-medium transition-colors" onClick={() => setMenuOpen(false)}>Новости</Link>
+              <Link href="/wishlist" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg font-medium transition-colors sm:hidden" onClick={() => setMenuOpen(false)}>Избранное</Link>
             </nav>
           </div>
         )}
       </div>
 
-      {/* Navigation bar */}
-      <nav className="bg-bg-white border-t border-border hidden md:block">
+      {/* Nav bar */}
+      <nav className="hidden md:block border-t border-border bg-bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <ul className="flex items-center gap-4 lg:gap-6 text-sm py-3">
-            <li><Link href="/catalog" className="text-text-dark hover:text-primary font-medium transition-colors">Каталог</Link></li>
-            <li><Link href="/wholesale" className="text-text-gray hover:text-primary transition-colors">Оптовые продажи</Link></li>
-            <li><Link href="/news" className="text-text-gray hover:text-primary transition-colors">Новости</Link></li>
-            <li><Link href="/about#delivery" className="text-text-gray hover:text-primary transition-colors">Доставка</Link></li>
-            <li><Link href="/about" className="text-text-gray hover:text-primary transition-colors">О компании</Link></li>
-            <li><Link href="/about#contacts" className="text-text-gray hover:text-primary transition-colors">Контакты</Link></li>
-          </ul>
+          <div className="flex items-center gap-6 py-2 text-sm font-medium">
+            <Link href="/catalog" className="text-text-dark hover:text-primary transition-colors">Каталог</Link>
+            <Link href="/catalog/ispariteli" className="text-text-gray hover:text-primary transition-colors">Испарители</Link>
+            <Link href="/catalog/kartridzhi" className="text-text-gray hover:text-primary transition-colors">Картриджи</Link>
+            <Link href="/catalog/akkumulyatory-i-batarejki" className="text-text-gray hover:text-primary transition-colors">Аккумуляторы</Link>
+            <Link href="/catalog/zaryadnye-ustrojstva" className="text-text-gray hover:text-primary transition-colors">Зарядки</Link>
+            <Link href="/catalog/powerbank-walker" className="text-text-gray hover:text-primary transition-colors">Powerbank</Link>
+            <Link href="/wholesale" className="text-text-gray hover:text-primary transition-colors">Опт</Link>
+            <Link href="/about" className="text-text-gray hover:text-primary transition-colors">О нас</Link>
+          </div>
         </div>
       </nav>
     </header>

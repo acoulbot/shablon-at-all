@@ -164,7 +164,7 @@ prisma/
 └── migrations/          # Миграции
 
 public/
-├── logo.png             # Логотип
+├── logo.jpg             # Логотип
 ├── favicon.ico          # Фавикон
 ├── slider/              # Слайды по умолчанию
 └── uploads/             # Загруженные файлы

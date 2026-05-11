@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "ТОПХИТ <onboarding@resend.dev>";
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "VapeLabHIT <onboarding@resend.dev>";
 
 export async function sendVerificationCode(email: string, code: string) {
   const { error } = await resend.emails.send({
@@ -11,7 +11,7 @@ export async function sendVerificationCode(email: string, code: string) {
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 12px;">
         <div style="text-align: center; margin-bottom: 24px;">
-          <h1 style="color: #4A90D9; font-size: 24px; margin: 0;">ТОПХИТ</h1>
+          <h1 style="color: #7B2D8E; font-size: 24px; margin: 0;">VapeLabHIT</h1>
           <p style="color: #64748b; font-size: 14px; margin-top: 4px;">Интернет-магазин</p>
         </div>
         <div style="background: white; border-radius: 8px; padding: 24px; text-align: center;">
@@ -21,7 +21,7 @@ export async function sendVerificationCode(email: string, code: string) {
           </div>
           <p style="color: #64748b; font-size: 13px; margin-bottom: 0;">Код действителен 10 минут.<br/>Если вы не запрашивали код, просто проигнорируйте это письмо.</p>
         </div>
-        <p style="text-align: center; color: #94a3b8; font-size: 12px; margin-top: 16px;">© ТОПХИТ — tophitt.ru</p>
+        <p style="text-align: center; color: #94a3b8; font-size: 12px; margin-top: 16px;">© VapeLabHIT — vapelabhit.ru</p>
       </div>
     `,
   });

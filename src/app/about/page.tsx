@@ -9,17 +9,17 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "О компании ТОПХИТ — оптовая и розничная торговля, доставка, контакты",
-  description: "ТОПХИТ — торговая компания, продажа товаров оптом и в розницу по лучшим ценам. Условия сотрудничества, график работы, доставка и самовывоз в Москве.",
+  title: "О компании VapeLabHIT — испарители, картриджи, аккумуляторы и аксессуары для вейпа",
+  description: "VapeLabHIT — интернет-магазин вейп-продукции. Испарители, картриджи, аккумуляторы, зарядные устройства, Powerbank Walker. Доставка по России.",
   openGraph: {
-    title: "О компании ТОПХИТ — опт и розница",
-    description: "ТОПХИТ — продажа товаров оптом и в розницу. Выгодные цены, доставка по Москве и МО, самовывоз.",
+    title: "О компании VapeLabHIT — вейп-магазин",
+    description: "VapeLabHIT — испарители, картриджи, аккумуляторы и аксессуары для вейпа. Качество и доставка по России.",
     locale: "ru_RU",
     type: "website",
-    url: "https://tophitt.ru/about",
+    url: "https://vapelabhit.ru/about",
   },
   alternates: {
-    canonical: "https://tophitt.ru/about",
+    canonical: "https://vapelabhit.ru/about",
   },
 };
 
@@ -39,10 +39,10 @@ export default async function AboutPage() {
           {/* Hero */}
           <div className="bg-bg-white rounded-xl border border-border p-4 sm:p-6 md:p-8 mb-6 sm:mb-8">
             <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-              <Image src="/logo.png" alt="ТОПХИТ" width={64} height={64} className="w-12 h-12 sm:w-16 sm:h-16" />
+              <Image src="/logo.jpg" alt="VapeLabHIT" width={64} height={64} className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg" />
               <div>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-dark">ТОПХИТ — торговая компания</h1>
-                <p className="text-text-gray">Товары оптом и в розницу по ценам от производителя</p>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-dark"><span className="gradient-text">VapeLabHIT</span> — вейп-магазин</h1>
+                <p className="text-text-gray">Испарители, картриджи, аккумуляторы и аксессуары для вейпа</p>
               </div>
             </div>
 
@@ -51,10 +51,10 @@ export default async function AboutPage() {
             ) : (
               <div className="text-text-gray leading-relaxed space-y-4">
                 <p className="text-lg text-text-dark">
-                  ТОПХИТ — современная торговая компания, которая быстро развивается и формирует универсальную площадку для покупок. Мы объединяем востребованные товары из разных категорий, чтобы вы могли закрывать повседневные задачи — от личных покупок до обеспечения бизнеса — в одном месте, без лишних поисков и переплат.
+                  VapeLabHIT — современный интернет-магазин вейп-продукции. Мы предлагаем широкий ассортимент испарителей, картриджей, аккумуляторов, зарядных устройств, powerbank Walker, шнуров и ваты — всё для комфортного вейпинга в одном месте.
                 </p>
                 <p>
-                  Наша цель — создать удобную, прозрачную и выгодную экосистему для покупок. Мы работаем с актуальным ассортиментом, гибко реагируем на спрос и выстраиваем процессы так, чтобы клиент получал не просто товар, а понятный и надёжный сервис. В основе нашей работы — честные цены, оперативность и внимание к деталям. Мы постоянно расширяем ассортимент и выстраиваем партнёрские отношения, предлагая индивидуальные условия сотрудничества.
+                  Мы работаем только с проверенными брендами и поставщиками, гарантируя оригинальность каждого товара. Наша цель — предоставить клиенту удобный сервис с быстрой доставкой, честными ценами и профессиональной поддержкой. Мы постоянно расширяем ассортимент и предлагаем индивидуальные условия для оптовых покупателей.
                 </p>
               </div>
             )}
@@ -67,21 +67,21 @@ export default async function AboutPage() {
                 <span className="text-2xl">&#127919;</span>
               </div>
               <h3 className="font-bold text-text-dark mb-2">Наша цель</h3>
-              <p className="text-sm text-text-gray">Создать удобную, прозрачную и выгодную экосистему для покупок с актуальным ассортиментом по честным ценам.</p>
+              <p className="text-sm text-text-gray">Стать ведущей площадкой вейп-продукции с лучшим ассортиментом и сервисом по честным ценам.</p>
             </div>
             <div className="bg-bg-white rounded-xl border border-border p-6">
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                 <span className="text-2xl">&#129309;</span>
               </div>
               <h3 className="font-bold text-text-dark mb-2">Наш подход</h3>
-              <p className="text-sm text-text-gray">Гибкость, честность и ориентация на потребности клиента. Оперативность и внимание к деталям.</p>
+              <p className="text-sm text-text-gray">Только оригинальная продукция, быстрая доставка и профессиональная консультация по каждому товару.</p>
             </div>
             <div className="bg-bg-white rounded-xl border border-border p-6">
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                 <span className="text-2xl">&#11088;</span>
               </div>
               <h3 className="font-bold text-text-dark mb-2">Наша особенность</h3>
-              <p className="text-sm text-text-gray">Регулярное расширение ассортимента и индивидуальные условия сотрудничества для каждого партнёра.</p>
+              <p className="text-sm text-text-gray">Широкий ассортимент от ведущих брендов и индивидуальные условия для оптовых партнёров.</p>
             </div>
           </div>
 
@@ -93,7 +93,7 @@ export default async function AboutPage() {
             ) : (
               <div className="text-text-gray leading-relaxed space-y-4">
                 <p>
-                  Мы уже предлагаем товары в популярных категориях — от продуктов питания и товаров для дома до одежды, техники и аксессуаров. В будущем ассортимент будет только расти, охватывая всё больше направлений — как для розничных покупателей, так и для оптовых клиентов.
+                  Наш ассортимент охватывает все ключевые категории вейп-индустрии — от одноразовых испарителей и pod-систем до аккумуляторов, зарядных устройств и расходных материалов. Мы постоянно расширяем линейку и следим за новинками рынка.
                 </p>
                 <p>
                   Продажи ведутся через онлайн-платформу с удобной системой доставок/самовывозов и возможностью оптового сотрудничества.
@@ -194,8 +194,8 @@ export default async function AboutPage() {
                     </div>
                     <div>
                       <h3 className="font-bold text-green-800 mb-1">Доступен самовывоз</h3>
-                      <p className="text-sm text-green-700 mb-1">Москва, ул. Складочная, 1, стр. 18</p>
-                      <p className="text-sm text-green-700">Пн–Пт с 11:00 до 16:00, выходной — Сб и Вск</p>
+                      <p className="text-sm text-green-700 mb-1">Москва</p>
+                      <p className="text-sm text-green-700">ПН-ВС с 10:00 до 22:00</p>
                     </div>
                   </div>
                 </div>
@@ -211,7 +211,7 @@ export default async function AboutPage() {
             ) : (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <a href="https://yandex.ru/maps/?text=127018+Москва+ул.+Складочная+д.+1+стр.+18" target="_blank" rel="noopener noreferrer"
+                  <a href="https://yandex.ru/maps/?text=Москва" target="_blank" rel="noopener noreferrer"
                     className="flex items-start gap-3 bg-bg-white rounded-xl border border-border p-4 hover:border-primary/30 hover:shadow-md transition-all">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -221,10 +221,10 @@ export default async function AboutPage() {
                     </div>
                     <div>
                       <p className="text-xs text-text-gray mb-0.5">Адрес</p>
-                      <p className="text-sm text-text-dark font-medium">127018, г. Москва, ул. Складочная д. 1 стр. 18</p>
+                      <p className="text-sm text-text-dark font-medium">Москва, Россия</p>
                     </div>
                   </a>
-                  <a href="tel:+79362568950"
+                  <a href="#"
                     className="flex items-start gap-3 bg-bg-white rounded-xl border border-border p-4 hover:border-primary/30 hover:shadow-md transition-all">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -233,10 +233,10 @@ export default async function AboutPage() {
                     </div>
                     <div>
                       <p className="text-xs text-text-gray mb-0.5">Телефон</p>
-                      <p className="text-sm text-primary font-bold">+7 (936) 256-89-50</p>
+                      <p className="text-sm text-primary font-bold">Свяжитесь с нами</p>
                     </div>
                   </a>
-                  <a href="mailto:zakaz@tophitt.ru"
+                  <a href="mailto:info@vapelabhit.ru"
                     className="flex items-start gap-3 bg-bg-white rounded-xl border border-border p-4 hover:border-primary/30 hover:shadow-md transition-all">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -245,10 +245,10 @@ export default async function AboutPage() {
                     </div>
                     <div>
                       <p className="text-xs text-text-gray mb-0.5">Розничные заказы</p>
-                      <p className="text-sm text-primary font-medium">zakaz@tophitt.ru</p>
+                      <p className="text-sm text-primary font-medium">info@vapelabhit.ru</p>
                     </div>
                   </a>
-                  <a href="mailto:opt@tophitt.ru"
+                  <a href="mailto:opt@vapelabhit.ru"
                     className="flex items-start gap-3 bg-bg-white rounded-xl border border-border p-4 hover:border-primary/30 hover:shadow-md transition-all">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -257,10 +257,10 @@ export default async function AboutPage() {
                     </div>
                     <div>
                       <p className="text-xs text-text-gray mb-0.5">Оптовые заказы</p>
-                      <p className="text-sm text-primary font-medium">opt@tophitt.ru</p>
+                      <p className="text-sm text-primary font-medium">opt@vapelabhit.ru</p>
                     </div>
                   </a>
-                  <a href="mailto:info@tophitt.ru"
+                  <a href="mailto:partners@vapelabhit.ru"
                     className="flex items-start gap-3 bg-bg-white rounded-xl border border-border p-4 hover:border-primary/30 hover:shadow-md transition-all sm:col-span-2">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -269,12 +269,12 @@ export default async function AboutPage() {
                     </div>
                     <div>
                       <p className="text-xs text-text-gray mb-0.5">Для поставщиков</p>
-                      <p className="text-sm text-primary font-medium">info@tophitt.ru</p>
+                      <p className="text-sm text-primary font-medium">partners@vapelabhit.ru</p>
                     </div>
                   </a>
                 </div>
                 <div className="mt-4 text-center">
-                  <p className="text-xs text-text-gray">ПН-ПТ с 09:00 до 18:00 | СБ-ВС: Выходной</p>
+                  <p className="text-xs text-text-gray">ПН-ВС с 10:00 до 22:00</p>
                 </div>
               </>
             )}
@@ -290,10 +290,10 @@ export default async function AboutPage() {
               mainEntity: [
                 {
                   "@type": "Question",
-                  name: "Какие товары продаёт ТОПХИТ?",
+                  name: "Какие товары продаёт VapeLabHIT?",
                   acceptedAnswer: {
                     "@type": "Answer",
-                    text: "ТОПХИТ предлагает широкий ассортимент товаров: продукты питания, бытовая химия, товары для дома, электроника, одежда и аксессуары. Ассортимент постоянно расширяется.",
+                    text: "VapeLabHIT предлагает испарители, картриджи для вейпа, аккумуляторы и батарейки, зарядные устройства, Powerbank Walker, шнуры, зарядки и вату.",
                   },
                 },
                 {
@@ -301,7 +301,7 @@ export default async function AboutPage() {
                   name: "Есть ли оптовые продажи?",
                   acceptedAnswer: {
                     "@type": "Answer",
-                    text: "Да, ТОПХИТ работает как с розничными, так и с оптовыми клиентами. Оптовые заказы предполагают скидки от 5% до 20% в зависимости от объёма. Заявки принимаются на opt@tophitt.ru.",
+                    text: "Да, VapeLabHIT работает как с розничными, так и с оптовыми клиентами. Оптовые заказы предполагают скидки от 5% до 20% в зависимости от объёма. Заявки принимаются на opt@vapelabhit.ru.",
                   },
                 },
                 {
@@ -309,7 +309,7 @@ export default async function AboutPage() {
                   name: "Как осуществляется доставка?",
                   acceptedAnswer: {
                     "@type": "Answer",
-                    text: "Доставка по Москве и МО, а также по всей России через Яндекс, OZON, СДЭК и Почту России. Доступен самовывоз: Москва, ул. Складочная, 1, стр. 18, Пн-Пт с 11 до 16ч.",
+                    text: "Доставка по всей России через Яндекс, OZON, СДЭК и Почту России. Быстрая отправка и надёжная упаковка.",
                   },
                 },
                 {

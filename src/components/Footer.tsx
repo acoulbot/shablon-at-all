@@ -9,11 +9,11 @@ export default function Footer() {
           {/* Company info */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Image src="/logo.png" alt="ТОПХИТ" width={40} height={40} className="w-10 h-10 drop-shadow-md" />
-              <span className="text-lg font-bold">ТОПХИТ</span>
+              <Image src="/logo.jpg" alt="VapeLabHIT" width={40} height={40} className="w-10 h-10 drop-shadow-md rounded-lg" />
+              <span className="text-lg font-bold">VapeLabHIT</span>
             </div>
             <p className="text-white/75 text-sm">
-              Динамично развивающаяся торговая компания с широким ассортиментом товаров для повседневной жизни, бизнеса и семьи.
+              Интернет-магазин вейп-продукции: испарители, картриджи, аккумуляторы, зарядные устройства, powerbank и аксессуары. Качество и надёжность.
             </p>
           </div>
 
@@ -22,10 +22,11 @@ export default function Footer() {
             <h3 className="font-bold mb-3 sm:mb-4 text-sm sm:text-base">Каталог</h3>
             <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-white/75">
               <li><Link href="/catalog" className="hover:text-white transition-colors">Все категории</Link></li>
-              <li><Link href="/catalog/produkty-pitaniya" className="hover:text-white transition-colors">Продукты питания</Link></li>
-              <li><Link href="/catalog/bytovaya-himiya" className="hover:text-white transition-colors">Бытовая химия</Link></li>
-              <li><Link href="/catalog/elektronika" className="hover:text-white transition-colors">Электроника</Link></li>
-              <li><Link href="/catalog/sadovodstvo" className="hover:text-white transition-colors">Садоводство</Link></li>
+              <li><Link href="/catalog/ispariteli" className="hover:text-white transition-colors">Испарители</Link></li>
+              <li><Link href="/catalog/kartridzhi" className="hover:text-white transition-colors">Картриджи</Link></li>
+              <li><Link href="/catalog/akkumulyatory-i-batarejki" className="hover:text-white transition-colors">Аккумуляторы</Link></li>
+              <li><Link href="/catalog/zaryadnye-ustrojstva" className="hover:text-white transition-colors">Зарядные устройства</Link></li>
+              <li><Link href="/catalog/powerbank-walker" className="hover:text-white transition-colors">Powerbank Walker</Link></li>
             </ul>
           </div>
 
@@ -46,61 +47,38 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1">
             <h3 className="font-bold mb-3 sm:mb-4 text-sm sm:text-base">Контакты</h3>
             <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-white/75">
-              <p><a href="tel:+79362568950" className="hover:text-white transition-colors">📞 +7 (936) 256-89-50</a></p>
-              <p><a href="mailto:zakaz@tophitt.ru" className="hover:text-white transition-colors break-all">📧 zakaz@tophitt.ru</a></p>
-              <p><a href="mailto:opt@tophitt.ru" className="hover:text-white transition-colors break-all">📧 opt@tophitt.ru (опт)</a></p>
-              <p><a href="mailto:info@tophitt.ru" className="hover:text-white transition-colors break-all">📧 info@tophitt.ru (поставщики)</a></p>
-              <p>📍 127018, г. Москва, ул. Складочная д. 1 стр. 18</p>
-              <p>🕒 ПН-ПТ с 09:00 до 18:00</p>
+              <p><a href="mailto:info@vapelabhit.ru" className="hover:text-white transition-colors break-all">info@vapelabhit.ru</a></p>
+              <p>Доставка по всей России</p>
+              <p>ПН-ВС с 10:00 до 22:00</p>
             </div>
           </div>
         </div>
 
         {/* Social networks */}
         <div className="border-t border-white/10 mt-8 pt-6">
-          <h3 className="font-bold mb-3 sm:mb-4 text-center text-sm sm:text-base">Наши соцсети</h3>
+          <h3 className="font-bold mb-3 sm:mb-4 text-center text-sm sm:text-base">Мы в соцсетях</h3>
           <div className="flex items-center justify-center gap-3 sm:gap-4 flex-wrap">
-            <a href="https://t.me/tophit_store" target="_blank" rel="nofollow noopener noreferrer"
+            <a href="https://t.me/vapelabhit" target="_blank" rel="nofollow noopener noreferrer"
               className="w-10 h-10 bg-white/10 hover:bg-primary rounded-lg flex items-center justify-center transition-colors" title="Telegram">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
               </svg>
             </a>
-            <a href="https://vk.com/tophit_market" target="_blank" rel="nofollow noopener noreferrer"
+            <a href="https://vk.com/vapelabhit" target="_blank" rel="nofollow noopener noreferrer"
               className="w-10 h-10 bg-white/10 hover:bg-primary rounded-lg flex items-center justify-center transition-colors" title="ВКонтакте">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.391 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.12-5.339-3.202-2.17-3.042-2.763-5.32-2.763-5.778 0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.678.864 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.204.17-.407.44-.407h2.744c.373 0 .508.203.508.644v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.254-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.763-.491h1.744c.525 0 .644.27.525.644-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.744-.576.744z" />
               </svg>
             </a>
-            <a href="https://www.ozon.ru/seller/tophit/" target="_blank" rel="nofollow noopener noreferrer"
-              className="w-10 h-10 bg-white/10 hover:bg-primary rounded-lg flex items-center justify-center transition-colors" title="OZON">
-              <svg className="w-5 h-5" viewBox="0 0 100 32" fill="none">
-                <rect width="100" height="32" rx="4" fill="#005BFF" />
-                <text x="50" y="22" textAnchor="middle" fill="white" fontSize="18" fontWeight="bold" fontFamily="Arial, sans-serif">OZON</text>
-              </svg>
-            </a>
           </div>
-        </div>
-
-        {/* Yandex Map — Moscow, Skladochnaya 1/18 */}
-        <div className="mt-6 rounded-lg overflow-hidden border border-white/10">
-          <iframe
-            src="https://yandex.ru/map-widget/v1/?ll=37.5937%2C55.8025&z=16&l=map&pt=37.5937%2C55.8025%2Cpm2rdm"
-            width="100%"
-            height="200"
-            style={{ border: 0 }}
-            title="Карта — ТОПХИТ, Москва"
-            loading="lazy"
-          />
         </div>
 
         {/* Legal info */}
         <div className="border-t border-white/10 mt-8 pt-6 text-xs text-white/55 space-y-2">
-          <p>© {new Date().getFullYear()} ТОПХИТ. Все права защищены.</p>
-          <p>Юридический адрес: 127018, г. Москва, ул. Складочная д. 1 стр. 18</p>
+          <p>&copy; {new Date().getFullYear()} VapeLabHIT. Все права защищены.</p>
           <p className="text-white/45">
             Информация на сайте не является публичной офертой. Изображения товаров могут отличаться от фактического вида.
-            Все цены указаны в рублях и включают НДС.
+            Все цены указаны в рублях. Продукция предназначена для лиц старше 18 лет.
           </p>
         </div>
       </div>

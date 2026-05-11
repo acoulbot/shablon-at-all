@@ -29,13 +29,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     include: { category: true },
   });
   if (!product) return {};
-  const title = `${product.name} — купить в ТОПХИТ`;
+  const title = `${product.name} — купить в VapeLabHIT`;
   const description = product.description
     ? product.description.slice(0, 160)
-    : `${product.name} по цене ${product.price} ₽. ${product.brand ? `Бренд: ${product.brand}.` : ""} Купить в интернет-магазине ТОПХИТ с доставкой.`;
+    : `${product.name} по цене ${product.price} ₽. ${product.brand ? `Бренд: ${product.brand}.` : ""} Купить в интернет-магазине VapeLabHIT с доставкой.`;
   const keywords = product.tags
     ? product.tags
-    : [product.name, product.brand, product.category.name, "купить", "ТОПХИТ"].filter(Boolean).join(", ");
+    : [product.name, product.brand, product.category.name, "купить", "VapeLabHIT"].filter(Boolean).join(", ");
   return {
     title,
     description,
@@ -45,10 +45,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       type: "website",
       locale: "ru_RU",
-      url: `https://tophitt.ru/product/${slug}`,
+      url: `https://vapelabhit.ru/product/${slug}`,
       images: product.image ? [{ url: product.image }] : [],
     },
-    alternates: { canonical: `https://tophitt.ru/product/${slug}` },
+    alternates: { canonical: `https://vapelabhit.ru/product/${slug}` },
   };
 }
 
@@ -95,17 +95,17 @@ export default async function ProductPage({ params }: PageProps) {
     color: product.color || undefined,
     weight: product.weight ? { "@type": "QuantitativeValue", value: product.weight, unitCode: "KGM" } : undefined,
     category: product.category.name,
-    url: `https://tophitt.ru/product/${product.slug}`,
+    url: `https://vapelabhit.ru/product/${product.slug}`,
     keywords: product.tags || undefined,
     offers: {
       "@type": "Offer",
-      url: `https://tophitt.ru/product/${product.slug}`,
+      url: `https://vapelabhit.ru/product/${product.slug}`,
       priceCurrency: "RUB",
       price: product.price,
       priceValidUntil: priceValidUntil.toISOString().split("T")[0],
       availability: product.inStock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       itemCondition: "https://schema.org/NewCondition",
-      seller: { "@type": "Organization", name: "ТОПХИТ" },
+      seller: { "@type": "Organization", name: "VapeLabHIT" },
       hasMerchantReturnPolicy: {
         "@type": "MerchantReturnPolicy",
         applicableCountry: "RU",
@@ -144,7 +144,7 @@ export default async function ProductPage({ params }: PageProps) {
         }))
       : [{
           "@type": "Review",
-          author: { "@type": "Organization", name: "ТОПХИТ" },
+          author: { "@type": "Organization", name: "VapeLabHIT" },
           datePublished: product.createdAt.toISOString().split("T")[0],
           reviewRating: { "@type": "Rating", ratingValue: 5, bestRating: 5, worstRating: 1 },
           reviewBody: `${product.name} — рекомендуем!`,
@@ -152,10 +152,10 @@ export default async function ProductPage({ params }: PageProps) {
   };
 
   const breadcrumbItems = [
-    { name: "Главная", url: "https://tophitt.ru/" },
-    { name: "Каталог", url: "https://tophitt.ru/catalog" },
-    ...(product.category.parent ? [{ name: product.category.parent.name, url: `https://tophitt.ru/catalog/${product.category.parent.slug}` }] : []),
-    { name: product.category.name, url: product.category.parent ? `https://tophitt.ru/catalog/${product.category.parent.slug}/${product.category.slug}` : `https://tophitt.ru/catalog/${product.category.slug}` },
+    { name: "Главная", url: "https://vapelabhit.ru/" },
+    { name: "Каталог", url: "https://vapelabhit.ru/catalog" },
+    ...(product.category.parent ? [{ name: product.category.parent.name, url: `https://vapelabhit.ru/catalog/${product.category.parent.slug}` }] : []),
+    { name: product.category.name, url: product.category.parent ? `https://vapelabhit.ru/catalog/${product.category.parent.slug}/${product.category.slug}` : `https://vapelabhit.ru/catalog/${product.category.slug}` },
     { name: product.name },
   ];
 

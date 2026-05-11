@@ -12,7 +12,7 @@ export default function OGImage() {
     (
       <div
         style={{
-          background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+          background: "linear-gradient(135deg, #1A1A2E 0%, #2D1B4E 50%, #5E1A6E 100%)",
           width: "100%",
           height: "100%",
           display: "flex",
@@ -34,7 +34,7 @@ export default function OGImage() {
             style={{
               width: "80px",
               height: "80px",
-              background: "#e94560",
+              background: "linear-gradient(135deg, #7B2D8E, #A855C8)",
               borderRadius: "20px",
               display: "flex",
               alignItems: "center",
@@ -44,7 +44,7 @@ export default function OGImage() {
               fontWeight: 800,
             }}
           >
-            TH
+            VL
           </div>
           <div
             style={{
@@ -54,7 +54,7 @@ export default function OGImage() {
               letterSpacing: "-2px",
             }}
           >
-            ТОПХИТ
+            VapeLabHIT
           </div>
         </div>
         <div
@@ -66,7 +66,7 @@ export default function OGImage() {
             lineHeight: 1.4,
           }}
         >
-          Интернет-магазин товаров оптом и в розницу
+          Испарители, картриджи, аккумуляторы и аксессуары для вейпа
         </div>
         <div
           style={{
@@ -75,7 +75,7 @@ export default function OGImage() {
             marginTop: "16px",
           }}
         >
-          tophitt.ru
+          vapelabhit.ru
         </div>
       </div>
     ),
