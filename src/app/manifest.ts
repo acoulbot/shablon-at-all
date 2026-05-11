@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Мой магазин — Интернет-магазин",
-    short_name: "Мой магазин",
+    name: "ТОПХИТ — Интернет-магазин",
+    short_name: "ТОПХИТ",
     description: "Интернет-магазин товаров оптом и в розницу по выгодным ценам",
     start_url: "/",
     display: "standalone",

@@ -9,13 +9,17 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "О компании — оптовая и розничная торговля, доставка, контакты",
-  description: "Торговая компания — продажа товаров оптом и в розницу по лучшим ценам. Условия сотрудничества, график работы, доставка и самовывоз.",
+  title: "О компании ТОПХИТ — оптовая и розничная торговля, доставка, контакты",
+  description: "ТОПХИТ — торговая компания, продажа товаров оптом и в розницу по лучшим ценам. Условия сотрудничества, график работы, доставка и самовывоз в Москве.",
   openGraph: {
-    title: "О компании — опт и розница",
-    description: "Продажа товаров оптом и в розницу. Выгодные цены, доставка, самовывоз.",
+    title: "О компании ТОПХИТ — опт и розница",
+    description: "ТОПХИТ — продажа товаров оптом и в розницу. Выгодные цены, доставка по Москве и МО, самовывоз.",
     locale: "ru_RU",
     type: "website",
+    url: "https://tophitt.ru/about",
+  },
+  alternates: {
+    canonical: "https://tophitt.ru/about",
   },
 };
 
@@ -35,9 +39,9 @@ export default async function AboutPage() {
           {/* Hero */}
           <div className="bg-bg-white rounded-xl border border-border p-4 sm:p-6 md:p-8 mb-6 sm:mb-8">
             <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-              <Image src="/logo.png" alt="Наша компания" width={64} height={64} className="w-12 h-12 sm:w-16 sm:h-16" />
+              <Image src="/logo.png" alt="ТОПХИТ" width={64} height={64} className="w-12 h-12 sm:w-16 sm:h-16" />
               <div>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-dark">О нашей компании</h1>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-dark">ТОПХИТ — торговая компания</h1>
                 <p className="text-text-gray">Товары оптом и в розницу по ценам от производителя</p>
               </div>
             </div>
@@ -47,7 +51,7 @@ export default async function AboutPage() {
             ) : (
               <div className="text-text-gray leading-relaxed space-y-4">
                 <p className="text-lg text-text-dark">
-                  Наша компания — современная торговая компания, которая быстро развивается и формирует универсальную площадку для покупок. Мы объединяем востребованные товары из разных категорий, чтобы вы могли закрывать повседневные задачи — от личных покупок до обеспечения бизнеса — в одном месте, без лишних поисков и переплат.
+                  ТОПХИТ — современная торговая компания, которая быстро развивается и формирует универсальную площадку для покупок. Мы объединяем востребованные товары из разных категорий, чтобы вы могли закрывать повседневные задачи — от личных покупок до обеспечения бизнеса — в одном месте, без лишних поисков и переплат.
                 </p>
                 <p>
                   Наша цель — создать удобную, прозрачную и выгодную экосистему для покупок. Мы работаем с актуальным ассортиментом, гибко реагируем на спрос и выстраиваем процессы так, чтобы клиент получал не просто товар, а понятный и надёжный сервис. В основе нашей работы — честные цены, оперативность и внимание к деталям. Мы постоянно расширяем ассортимент и выстраиваем партнёрские отношения, предлагая индивидуальные условия сотрудничества.
@@ -190,7 +194,7 @@ export default async function AboutPage() {
                     </div>
                     <div>
                       <h3 className="font-bold text-green-800 mb-1">Доступен самовывоз</h3>
-                      <p className="text-sm text-green-700 mb-1">Укажите адрес в настройках</p>
+                      <p className="text-sm text-green-700 mb-1">Москва, ул. Складочная, 1, стр. 18</p>
                       <p className="text-sm text-green-700">Пн–Пт с 11:00 до 16:00, выходной — Сб и Вск</p>
                     </div>
                   </div>
@@ -207,7 +211,7 @@ export default async function AboutPage() {
             ) : (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <a href="#" target="_blank" rel="noopener noreferrer"
+                  <a href="https://yandex.ru/maps/?text=127018+Москва+ул.+Складочная+д.+1+стр.+18" target="_blank" rel="noopener noreferrer"
                     className="flex items-start gap-3 bg-bg-white rounded-xl border border-border p-4 hover:border-primary/30 hover:shadow-md transition-all">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -217,10 +221,10 @@ export default async function AboutPage() {
                     </div>
                     <div>
                       <p className="text-xs text-text-gray mb-0.5">Адрес</p>
-                      <p className="text-sm text-text-dark font-medium">Укажите адрес в настройках</p>
+                      <p className="text-sm text-text-dark font-medium">127018, г. Москва, ул. Складочная д. 1 стр. 18</p>
                     </div>
                   </a>
-                  <a href="tel:+70000000000"
+                  <a href="tel:+79362568950"
                     className="flex items-start gap-3 bg-bg-white rounded-xl border border-border p-4 hover:border-primary/30 hover:shadow-md transition-all">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -229,10 +233,10 @@ export default async function AboutPage() {
                     </div>
                     <div>
                       <p className="text-xs text-text-gray mb-0.5">Телефон</p>
-                      <p className="text-sm text-primary font-bold">+7 (000) 000-00-00</p>
+                      <p className="text-sm text-primary font-bold">+7 (936) 256-89-50</p>
                     </div>
                   </a>
-                  <a href="mailto:"
+                  <a href="mailto:zakaz@tophitt.ru"
                     className="flex items-start gap-3 bg-bg-white rounded-xl border border-border p-4 hover:border-primary/30 hover:shadow-md transition-all">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -241,10 +245,10 @@ export default async function AboutPage() {
                     </div>
                     <div>
                       <p className="text-xs text-text-gray mb-0.5">Розничные заказы</p>
-                      <p className="text-sm text-primary font-medium"></p>
+                      <p className="text-sm text-primary font-medium">zakaz@tophitt.ru</p>
                     </div>
                   </a>
-                  <a href="mailto:"
+                  <a href="mailto:opt@tophitt.ru"
                     className="flex items-start gap-3 bg-bg-white rounded-xl border border-border p-4 hover:border-primary/30 hover:shadow-md transition-all">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -253,10 +257,10 @@ export default async function AboutPage() {
                     </div>
                     <div>
                       <p className="text-xs text-text-gray mb-0.5">Оптовые заказы</p>
-                      <p className="text-sm text-primary font-medium"></p>
+                      <p className="text-sm text-primary font-medium">opt@tophitt.ru</p>
                     </div>
                   </a>
-                  <a href="mailto:"
+                  <a href="mailto:info@tophitt.ru"
                     className="flex items-start gap-3 bg-bg-white rounded-xl border border-border p-4 hover:border-primary/30 hover:shadow-md transition-all sm:col-span-2">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,7 +269,7 @@ export default async function AboutPage() {
                     </div>
                     <div>
                       <p className="text-xs text-text-gray mb-0.5">Для поставщиков</p>
-                      <p className="text-sm text-primary font-medium"></p>
+                      <p className="text-sm text-primary font-medium">info@tophitt.ru</p>
                     </div>
                   </a>
                 </div>
@@ -286,10 +290,10 @@ export default async function AboutPage() {
               mainEntity: [
                 {
                   "@type": "Question",
-                  name: "Какие товары продаёт Наша компания?",
+                  name: "Какие товары продаёт ТОПХИТ?",
                   acceptedAnswer: {
                     "@type": "Answer",
-                    text: "Наша компания предлагает широкий ассортимент товаров: продукты питания, бытовая химия, товары для дома, электроника, одежда и аксессуары. Ассортимент постоянно расширяется.",
+                    text: "ТОПХИТ предлагает широкий ассортимент товаров: продукты питания, бытовая химия, товары для дома, электроника, одежда и аксессуары. Ассортимент постоянно расширяется.",
                   },
                 },
                 {
@@ -297,7 +301,7 @@ export default async function AboutPage() {
                   name: "Есть ли оптовые продажи?",
                   acceptedAnswer: {
                     "@type": "Answer",
-                    text: "Да, Наша компания работает как с розничными, так и с оптовыми клиентами. Оптовые заказы предполагают скидки от 5% до 20% в зависимости от объёма. Заявки принимаются на .",
+                    text: "Да, ТОПХИТ работает как с розничными, так и с оптовыми клиентами. Оптовые заказы предполагают скидки от 5% до 20% в зависимости от объёма. Заявки принимаются на opt@tophitt.ru.",
                   },
                 },
                 {
@@ -305,7 +309,7 @@ export default async function AboutPage() {
                   name: "Как осуществляется доставка?",
                   acceptedAnswer: {
                     "@type": "Answer",
-                    text: "Доставка по Москве и МО, а также по всей России через Яндекс, OZON, СДЭК и Почту России. Доступен самовывоз: Укажите адрес в настройках, Пн-Пт с 11 до 16ч.",
+                    text: "Доставка по Москве и МО, а также по всей России через Яндекс, OZON, СДЭК и Почту России. Доступен самовывоз: Москва, ул. Складочная, 1, стр. 18, Пн-Пт с 11 до 16ч.",
                   },
                 },
                 {

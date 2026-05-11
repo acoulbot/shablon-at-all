@@ -6,12 +6,10 @@ import ScrollReveal from "@/components/ScrollReveal";
 import CategoryGrid from "@/components/CategoryGrid";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { getSettings } from "@/lib/settings";
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const settings = await getSettings();
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
@@ -50,10 +48,11 @@ export default async function HomePage() {
   const websiteLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: settings.siteName,
+    name: "ТОПХИТ",
+    url: "https://tophitt.ru",
     potentialAction: {
       "@type": "SearchAction",
-      target: "/catalog?search={search_term_string}",
+      target: "https://tophitt.ru/catalog?search={search_term_string}",
       "query-input": "required name=search_term_string",
     },
   };
@@ -77,10 +76,10 @@ export default async function HomePage() {
         <section className="max-w-7xl mx-auto px-3 sm:px-4 pt-2 sm:pt-4 pb-4 sm:pb-6">
           <div className="bg-gradient-to-br from-bg-white to-primary/[0.03] rounded-2xl border border-border p-5 sm:p-8 text-center">
             <h1 className="font-heading text-2xl sm:text-3xl md:text-4xl font-extrabold text-text-dark leading-tight mb-3 sm:mb-4">
-              {settings.siteName} — {settings.siteDescription}
+              Товары оптом и в розницу<br className="hidden sm:block" /> по ценам от производителя
             </h1>
             <p className="text-text-gray text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-5 sm:mb-6 leading-relaxed">
-              <strong className="text-text-dark">От 1 штуки</strong> или <strong className="text-text-dark">упаковками со скидкой&nbsp;{settings.packDiscount}%</strong>
+              Продукты, бытовая химия, товары для дома — <strong className="text-text-dark">от 1 штуки</strong> или <strong className="text-text-dark">упаковками со скидкой&nbsp;10%</strong>. Доставка по Москве и МО, самовывоз со склада.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link href="/catalog" className="bg-primary hover:bg-primary-dark text-white font-bold px-8 py-3 rounded-xl transition-colors text-sm sm:text-base shadow-md hover:shadow-lg">

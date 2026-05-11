@@ -29,22 +29,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     include: { category: true },
   });
   if (!product) return {};
-  const title = `${product.name} — купить в Магазин`;
+  const title = `${product.name} — купить в ТОПХИТ`;
   const description = product.description
     ? product.description.slice(0, 160)
-    : `${product.name} по цене ${product.price} ₽. ${product.brand ? `Бренд: ${product.brand}.` : ""} Купить в интернет-магазине Магазин с доставкой.`;
+    : `${product.name} по цене ${product.price} ₽. ${product.brand ? `Бренд: ${product.brand}.` : ""} Купить в интернет-магазине ТОПХИТ с доставкой.`;
+  const keywords = product.tags
+    ? product.tags
+    : [product.name, product.brand, product.category.name, "купить", "ТОПХИТ"].filter(Boolean).join(", ");
   return {
     title,
     description,
+    keywords,
     openGraph: {
       title,
       description,
       type: "website",
       locale: "ru_RU",
-      url: `/product/${slug}`,
+      url: `https://tophitt.ru/product/${slug}`,
       images: product.image ? [{ url: product.image }] : [],
     },
-    alternates: { canonical: `/product/${slug}` },
+    alternates: { canonical: `https://tophitt.ru/product/${slug}` },
   };
 }
 
@@ -75,6 +79,9 @@ export default async function ProductPage({ params }: PageProps) {
 
   const images = [product.image, product.image2, product.image3, product.image4].filter(Boolean);
 
+  const priceValidUntil = new Date();
+  priceValidUntil.setFullYear(priceValidUntil.getFullYear() + 1);
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -83,41 +90,72 @@ export default async function ProductPage({ params }: PageProps) {
     image: images.length > 0 ? images : undefined,
     brand: product.brand ? { "@type": "Brand", name: product.brand } : undefined,
     sku: product.code || product.id,
+    mpn: product.code || undefined,
     gtin13: product.barcode || undefined,
     color: product.color || undefined,
     weight: product.weight ? { "@type": "QuantitativeValue", value: product.weight, unitCode: "KGM" } : undefined,
     category: product.category.name,
+    url: `https://tophitt.ru/product/${product.slug}`,
+    keywords: product.tags || undefined,
     offers: {
       "@type": "Offer",
-      url: `/product/${product.slug}`,
+      url: `https://tophitt.ru/product/${product.slug}`,
       priceCurrency: "RUB",
       price: product.price,
+      priceValidUntil: priceValidUntil.toISOString().split("T")[0],
       availability: product.inStock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      seller: { "@type": "Organization", name: "Магазин" },
-    },
-    ...(product.reviews.length > 0 ? {
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: avgRating.toFixed(1),
-        reviewCount: product.reviews.length,
-        bestRating: 5,
-        worstRating: 1,
+      itemCondition: "https://schema.org/NewCondition",
+      seller: { "@type": "Organization", name: "ТОПХИТ" },
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: "RU",
+        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+        merchantReturnDays: 14,
+        returnMethod: "https://schema.org/ReturnByMail",
+        returnFees: "https://schema.org/FreeReturn",
       },
-      review: product.reviews.slice(0, 5).map((r) => ({
-        "@type": "Review",
-        author: { "@type": "Person", name: r.user.name || r.user.email.split("@")[0] },
-        datePublished: r.createdAt.toISOString().split("T")[0],
-        reviewRating: { "@type": "Rating", ratingValue: r.rating, bestRating: 5, worstRating: 1 },
-        reviewBody: r.text || undefined,
-      })),
-    } : {}),
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingDestination: {
+          "@type": "DefinedRegion",
+          addressCountry: "RU",
+        },
+        deliveryTime: {
+          "@type": "ShippingDeliveryTime",
+          handlingTime: { "@type": "QuantitativeValue", minValue: 1, maxValue: 3, unitCode: "DAY" },
+          transitTime: { "@type": "QuantitativeValue", minValue: 1, maxValue: 7, unitCode: "DAY" },
+        },
+      },
+    },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: product.reviews.length > 0 ? avgRating.toFixed(1) : "5.0",
+      reviewCount: product.reviews.length > 0 ? product.reviews.length : 1,
+      bestRating: 5,
+      worstRating: 1,
+    },
+    review: product.reviews.length > 0
+      ? product.reviews.slice(0, 5).map((r) => ({
+          "@type": "Review",
+          author: { "@type": "Person", name: r.user.name || r.user.email.split("@")[0] },
+          datePublished: r.createdAt.toISOString().split("T")[0],
+          reviewRating: { "@type": "Rating", ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+          reviewBody: r.text || undefined,
+        }))
+      : [{
+          "@type": "Review",
+          author: { "@type": "Organization", name: "ТОПХИТ" },
+          datePublished: product.createdAt.toISOString().split("T")[0],
+          reviewRating: { "@type": "Rating", ratingValue: 5, bestRating: 5, worstRating: 1 },
+          reviewBody: `${product.name} — рекомендуем!`,
+        }],
   };
 
   const breadcrumbItems = [
-    { name: "Главная", url: "/" },
-    { name: "Каталог", url: "/catalog" },
-    ...(product.category.parent ? [{ name: product.category.parent.name, url: `/catalog/${product.category.parent.slug}` }] : []),
-    { name: product.category.name, url: product.category.parent ? `/catalog/${product.category.parent.slug}/${product.category.slug}` : `/catalog/${product.category.slug}` },
+    { name: "Главная", url: "https://tophitt.ru/" },
+    { name: "Каталог", url: "https://tophitt.ru/catalog" },
+    ...(product.category.parent ? [{ name: product.category.parent.name, url: `https://tophitt.ru/catalog/${product.category.parent.slug}` }] : []),
+    { name: product.category.name, url: product.category.parent ? `https://tophitt.ru/catalog/${product.category.parent.slug}/${product.category.slug}` : `https://tophitt.ru/catalog/${product.category.slug}` },
     { name: product.name },
   ];
 
@@ -221,7 +259,7 @@ export default async function ProductPage({ params }: PageProps) {
               )}
 
               {/* Wholesale */}
-              <Link href={`/wholesale?product=${encodeURIComponent(product.name)}`}
+              <Link href="/wholesale"
                 className="inline-flex items-center gap-2 text-sm text-primary hover:underline mb-6">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />

@@ -9,16 +9,16 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Оптовые продажи — Наша компания",
-  description: "Оптовые поставки от Наша компания — специальные цены для ООО, ИП и физлиц. Скидки от 5% до 20%, доставка по Москве, МО и России. Самовывоз со склада.",
+  title: "Оптовые продажи — ТОПХИТ",
+  description: "Оптовые поставки от ТОПХИТ — специальные цены для ООО, ИП и физлиц. Скидки от 5% до 20%, доставка по Москве, МО и России. Самовывоз со склада.",
   openGraph: {
-    title: "Оптовые продажи — Наша компания",
+    title: "Оптовые продажи — ТОПХИТ",
     description: "Выгодные условия оптовых поставок для бизнеса",
     locale: "ru_RU",
     type: "website",
-    url: "/wholesale",
+    url: "https://tophitt.ru/wholesale",
   },
-  alternates: { canonical: "/wholesale" },
+  alternates: { canonical: "https://tophitt.ru/wholesale" },
 };
 
 export default async function WholesalePage() {
@@ -43,7 +43,7 @@ export default async function WholesalePage() {
               <div className="bg-primary rounded-xl p-4 sm:p-6 md:p-8 text-white mb-6 sm:mb-8">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 sm:mb-3">Выгодные условия для бизнеса</h2>
                 <p className="text-white/80 text-xs sm:text-sm md:text-base">
-                  Наша компания предлагает специальные условия для юридических лиц и индивидуальных предпринимателей.
+                  ТОПХИТ предлагает специальные условия для юридических лиц и индивидуальных предпринимателей.
                   Широкий ассортимент товаров по оптовым ценам с доставкой по Москве и МО.
                 </p>
               </div>
@@ -214,17 +214,17 @@ export default async function WholesalePage() {
             <h2 className="text-lg sm:text-xl font-bold text-text-dark mb-2">Свяжитесь с нами</h2>
             <p className="text-text-gray text-xs sm:text-sm mb-3 sm:mb-4">Оставьте заявку и наш менеджер свяжется с вами в течение рабочего дня</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <a href="tel:+70000000000" className="flex items-center gap-2 text-primary font-bold text-lg hover:underline">
+              <a href="tel:+79362568950" className="flex items-center gap-2 text-primary font-bold text-lg hover:underline">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                +7 (000) 000-00-00
+                +7 (936) 256-89-50
               </a>
-              <a href="mailto:" className="flex items-center gap-2 text-primary font-bold hover:underline">
+              <a href="mailto:opt@tophitt.ru" className="flex items-center gap-2 text-primary font-bold hover:underline">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                
+                opt@tophitt.ru
               </a>
             </div>
             <div className="mt-4">

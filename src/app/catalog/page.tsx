@@ -15,10 +15,11 @@ import { SkeletonProductGrid } from "@/components/Skeleton";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Каталог товаров — Магазин | Опт и розница по ценам от производителя",
-  description: "Каталог Магазин — продукты, бытовая химия, товары для дома оптом и в розницу. Скидка 10% при покупке упаковкой. Доставка по Москве и МО, самовывоз со склада.",
+  title: "Каталог товаров — ТОПХИТ | Опт и розница по ценам от производителя",
+  description: "Каталог ТОПХИТ — продукты, бытовая химия, товары для дома оптом и в розницу. Скидка 10% при покупке упаковкой. Доставка по Москве и МО, самовывоз со склада.",
+  alternates: { canonical: "https://tophitt.ru/catalog" },
   openGraph: {
-    title: "Каталог товаров — Магазин | Опт и розница",
+    title: "Каталог товаров — ТОПХИТ | Опт и розница",
     description: "Продукты, бытовая химия, товары для дома — от 1 штуки или упаковками со скидкой 10%",
     locale: "ru_RU",
     type: "website",
@@ -228,7 +229,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
           <Breadcrumbs items={[{ label: "Каталог" }]} />
 
-          <h1 className="text-xl sm:text-2xl font-bold text-text-dark mb-1 sm:mb-2">Каталог товаров Магазин</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-text-dark mb-1 sm:mb-2">Каталог товаров ТОПХИТ</h1>
           <p className="text-text-gray text-sm mb-4 sm:mb-6">Покупайте поштучно или упаковками со скидкой 10% — доставка и самовывоз</p>
 
           <Suspense fallback={<SkeletonProductGrid count={8} />}>
