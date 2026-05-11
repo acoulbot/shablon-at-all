@@ -2,13 +2,13 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "ТОПХИТ — Интернет-магазин",
-    short_name: "ТОПХИТ",
-    description: "Интернет-магазин товаров оптом и в розницу по выгодным ценам",
+    name: "VapeLabHIT — Вейп-магазин",
+    short_name: "VapeLabHIT",
+    description: "Интернет-магазин вейп-продукции: испарители, картриджи, аккумуляторы и аксессуары",
     start_url: "/",
     display: "standalone",
-    background_color: "#f8f9fa",
-    theme_color: "#e94560",
+    background_color: "#F5F3F7",
+    theme_color: "#7B2D8E",
     icons: [
       {
         src: "/favicon-32x32.png",

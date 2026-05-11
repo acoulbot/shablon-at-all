@@ -37,13 +37,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const category = await resolveCategory(slug);
   if (!category) return {};
   const canonicalPath = getCategoryPath(category);
-  const title = category.metaTitle || `${category.name} — купить в ТОПХИТ`;
-  const description = category.metaDescription || `Купить ${category.name} в магазине ТОПХИТ. Широкий ассортимент, выгодные цены, доставка по Москве и МО.`;
+  const title = category.metaTitle || `${category.name} — купить в VapeLabHIT`;
+  const description = category.metaDescription || `Купить ${category.name} в магазине VapeLabHIT. Широкий ассортимент, выгодные цены, доставка по Москве и МО.`;
   return {
     title,
     description,
-    openGraph: { title, description, locale: "ru_RU", type: "website", url: `https://tophitt.ru${canonicalPath}` },
-    alternates: { canonical: `https://tophitt.ru${canonicalPath}` },
+    openGraph: { title, description, locale: "ru_RU", type: "website", url: `https://vapelabhit.ru${canonicalPath}` },
+    alternates: { canonical: `https://vapelabhit.ru${canonicalPath}` },
   };
 }
 
@@ -118,19 +118,19 @@ async function CategoryContent({
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: category.name,
-    description: category.metaDescription || `Купить ${category.name} в магазине ТОПХИТ`,
-    url: `https://tophitt.ru${categoryPath}`,
+    description: category.metaDescription || `Купить ${category.name} в магазине VapeLabHIT`,
+    url: `https://vapelabhit.ru${categoryPath}`,
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: totalCount,
       itemListElement: products.map((p, i) => ({
         "@type": "ListItem",
         position: skip + i + 1,
-        url: `https://tophitt.ru/product/${p.slug}`,
+        url: `https://vapelabhit.ru/product/${p.slug}`,
         item: {
           "@type": "Product",
           name: p.name,
-          url: `https://tophitt.ru/product/${p.slug}`,
+          url: `https://vapelabhit.ru/product/${p.slug}`,
           image: p.image || undefined,
           offers: {
             "@type": "Offer",

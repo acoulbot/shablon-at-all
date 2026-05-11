@@ -48,11 +48,11 @@ export default async function HomePage() {
   const websiteLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "ТОПХИТ",
-    url: "https://tophitt.ru",
+    name: "VapeLabHIT",
+    url: process.env.NEXT_PUBLIC_BASE_URL || "https://vapelabhit.ru",
     potentialAction: {
       "@type": "SearchAction",
-      target: "https://tophitt.ru/catalog?search={search_term_string}",
+      target: `${process.env.NEXT_PUBLIC_BASE_URL || "https://vapelabhit.ru"}/catalog?search={search_term_string}`,
       "query-input": "required name=search_term_string",
     },
   };
@@ -72,17 +72,21 @@ export default async function HomePage() {
           <HeroSlider slides={slides} />
         </section>
 
-        {/* H1 + УТП / Оффер */}
+        {/* H1 + brand offer */}
         <section className="max-w-7xl mx-auto px-3 sm:px-4 pt-2 sm:pt-4 pb-4 sm:pb-6">
-          <div className="bg-gradient-to-br from-bg-white to-primary/[0.03] rounded-2xl border border-border p-5 sm:p-8 text-center">
-            <h1 className="font-heading text-2xl sm:text-3xl md:text-4xl font-extrabold text-text-dark leading-tight mb-3 sm:mb-4">
-              Товары оптом и в розницу<br className="hidden sm:block" /> по ценам от производителя
+          <div className="bg-gradient-to-br from-bg-white via-primary/[0.03] to-primary/[0.08] rounded-2xl border border-border p-5 sm:p-8 text-center relative overflow-hidden">
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute top-10 left-10 w-32 h-32 bg-primary rounded-full blur-3xl animate-float" />
+              <div className="absolute bottom-10 right-10 w-24 h-24 bg-accent rounded-full blur-3xl animate-float" style={{ animationDelay: "1.5s" }} />
+            </div>
+            <h1 className="font-heading text-2xl sm:text-3xl md:text-4xl font-extrabold text-text-dark leading-tight mb-3 sm:mb-4 relative">
+              <span className="gradient-text">VapeLabHIT</span> — всё для вейпа<br className="hidden sm:block" /> в одном месте
             </h1>
-            <p className="text-text-gray text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-5 sm:mb-6 leading-relaxed">
-              Продукты, бытовая химия, товары для дома — <strong className="text-text-dark">от 1 штуки</strong> или <strong className="text-text-dark">упаковками со скидкой&nbsp;10%</strong>. Доставка по Москве и МО, самовывоз со склада.
+            <p className="text-text-gray text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-5 sm:mb-6 leading-relaxed relative">
+              Испарители, картриджи, аккумуляторы и батарейки, зарядные устройства, <strong className="text-text-dark">Powerbank Walker</strong>, шнуры, зарядки и вата. Качественная продукция с доставкой по России.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link href="/catalog" className="bg-primary hover:bg-primary-dark text-white font-bold px-8 py-3 rounded-xl transition-colors text-sm sm:text-base shadow-md hover:shadow-lg">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 relative">
+              <Link href="/catalog" className="bg-primary hover:bg-primary-dark text-white font-bold px-8 py-3 rounded-xl transition-all text-sm sm:text-base shadow-md hover:shadow-lg hover:shadow-primary/25 animate-glow-pulse">
                 Перейти в каталог
               </Link>
               <Link href="/wholesale" className="border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold px-8 py-3 rounded-xl transition-all text-sm sm:text-base">
@@ -97,12 +101,12 @@ export default async function HomePage() {
           <section className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
               {[
-                { icon: "🚚", title: "Бесплатная доставка", desc: "При заказе от 5 000 ₽" },
-                { icon: "🛡️", title: "Гарантия качества", desc: "Только оригинальная продукция" },
+                { icon: "🚚", title: "Быстрая доставка", desc: "По всей России" },
+                { icon: "✅", title: "Оригинальная продукция", desc: "Гарантия качества" },
                 { icon: "💬", title: "Поддержка 24/7", desc: "Ответим на любые вопросы" },
-                { icon: "↩️", title: "Возврат 14 дней", desc: "Без лишних вопросов" },
+                { icon: "🔄", title: "Возврат 14 дней", desc: "Без лишних вопросов" },
               ].map((item) => (
-                <div key={item.title} className="bg-bg-white rounded-xl border border-border p-3 sm:p-4 flex items-start gap-2.5 sm:gap-3 hover:shadow-md transition-shadow">
+                <div key={item.title} className="bg-bg-white rounded-xl border border-border p-3 sm:p-4 flex items-start gap-2.5 sm:gap-3 hover:shadow-md transition-shadow hover-lift">
                   <span className="text-xl sm:text-2xl flex-shrink-0">{item.icon}</span>
                   <div>
                     <h3 className="font-heading text-xs sm:text-sm font-bold text-text-dark">{item.title}</h3>
@@ -119,7 +123,7 @@ export default async function HomePage() {
           <section className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <h2 className="font-heading text-lg sm:text-2xl font-bold text-text-dark">Категории товаров</h2>
-              <Link href="/catalog" className="text-primary hover:underline text-xs sm:text-sm">Все категории →</Link>
+              <Link href="/catalog" className="text-primary hover:underline text-xs sm:text-sm">Все категории &rarr;</Link>
             </div>
             <CategoryGrid categories={categories.map(c => ({ id: c.id, name: c.name, slug: c.slug, icon: c.icon, children: c.children.map(ch => ({ id: ch.id, name: ch.name, slug: ch.slug, icon: ch.icon })), _count: c._count }))} />
           </section>
@@ -129,13 +133,13 @@ export default async function HomePage() {
         {saleProducts.length > 0 && (
           <ScrollReveal>
             <section className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
-              <div className="bg-gradient-to-r from-danger/10 to-accent/10 rounded-xl p-4 sm:p-6 border border-danger/20">
+              <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl p-4 sm:p-6 border border-primary/20">
                 <div className="flex items-center justify-between mb-4 sm:mb-6">
                   <div className="flex items-center gap-2 sm:gap-3">
                     <span className="text-xl sm:text-2xl">🔥</span>
                     <h2 className="font-heading text-lg sm:text-2xl font-bold text-text-dark">Акции и скидки</h2>
                   </div>
-                  <Link href="/catalog?sort=price_asc" className="text-danger hover:underline text-xs sm:text-sm font-medium">Все акции →</Link>
+                  <Link href="/catalog?sort=price_asc" className="text-primary hover:underline text-xs sm:text-sm font-medium">Все акции &rarr;</Link>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
                   {saleProducts.map((product) => (
@@ -164,7 +168,7 @@ export default async function HomePage() {
           <section className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <h2 className="font-heading text-lg sm:text-2xl font-bold text-text-dark">Популярные товары</h2>
-              <Link href="/catalog" className="text-primary hover:underline text-xs sm:text-sm">Все товары →</Link>
+              <Link href="/catalog" className="text-primary hover:underline text-xs sm:text-sm">Все товары &rarr;</Link>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
               {featuredProducts.map((product) => (
@@ -196,7 +200,7 @@ export default async function HomePage() {
                   <span className="text-xl sm:text-2xl">✨</span>
                   <h2 className="font-heading text-lg sm:text-2xl font-bold text-text-dark">Новинки</h2>
                 </div>
-                <Link href="/catalog?sort=new" className="text-primary hover:underline text-xs sm:text-sm">Все новинки →</Link>
+                <Link href="/catalog?sort=new" className="text-primary hover:underline text-xs sm:text-sm">Все новинки &rarr;</Link>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
                 {newProducts.map((product) => (
@@ -227,7 +231,7 @@ export default async function HomePage() {
               <h2 className="font-heading text-lg sm:text-2xl font-bold text-text-dark mb-4 sm:mb-6 text-center">Отзывы покупателей</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {reviews.map((review) => (
-                  <div key={review.id} className="bg-bg-white rounded-xl border border-border p-4 sm:p-5 hover:shadow-md transition-shadow">
+                  <div key={review.id} className="bg-bg-white rounded-xl border border-border p-4 sm:p-5 hover:shadow-md transition-shadow hover-lift">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-sm font-bold text-primary">
                         {(review.user.name || "?")[0].toUpperCase()}
@@ -251,6 +255,13 @@ export default async function HomePage() {
             </section>
           </ScrollReveal>
         )}
+
+        {/* Age verification banner */}
+        <section className="max-w-7xl mx-auto px-3 sm:px-4 pb-6 sm:pb-10">
+          <div className="bg-text-dark/5 rounded-xl p-4 sm:p-6 text-center border border-border">
+            <p className="text-sm text-text-gray">Продукция предназначена для лиц старше 18 лет. Приобретая товары на сайте, вы подтверждаете своё совершеннолетие.</p>
+          </div>
+        </section>
       </main>
       <Footer />
     </>

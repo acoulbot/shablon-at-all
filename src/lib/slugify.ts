@@ -73,6 +73,19 @@ const wordDict: Record<string, string> = {
   "распродажа": "rasprodazha",
   "категория": "kategoriya",
   "каталог": "katalog",
+  "испарители": "ispariteli",
+  "картриджи": "kartridzhi",
+  "аккумуляторы": "akkumulyatory",
+  "батарейки": "batarejki",
+  "зарядные": "zaryadnye",
+  "устройства": "ustrojstva",
+  "зарядные устройства": "zaryadnye-ustrojstva",
+  "аккумуляторы и батарейки": "akkumulyatory-i-batarejki",
+  "шнуры": "shnury",
+  "зарядки": "zaryadki",
+  "шнуры и зарядки": "shnury-i-zaryadki",
+  "вата": "vata",
+  "powerbank": "powerbank",
 };
 
 export function slugify(text: string): string {
@@ -104,7 +117,7 @@ export function getCategoryUrl(
   category: { slug: string; parent?: { slug: string } | null },
 ): string {
   if (category.parent) {
-    return `https://tophitt.ru/catalog/${category.parent.slug}/${category.slug}`;
+    return `https://vapelabhit.ru/catalog/${category.parent.slug}/${category.slug}`;
   }
-  return `https://tophitt.ru/catalog/${category.slug}`;
+  return `https://vapelabhit.ru/catalog/${category.slug}`;
 }
