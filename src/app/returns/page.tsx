@@ -55,7 +55,7 @@ export default function ReturnsPage() {
 
               <div className="bg-bg-light rounded-lg p-4 border border-border">
                 <p className="text-xs text-text-gray">По всем вопросам возврата и обмена обращайтесь:</p>
-                <p className="mt-1"><a href="tel:+70000000000" className="text-primary hover:underline text-sm font-medium">+7 (000) 000-00-00</a></p>
+                <p className="mt-1"><a href="tel:+79362568950" className="text-primary hover:underline text-sm font-medium">+7 (936) 256-89-50</a></p>
               </div>
             </div>
 

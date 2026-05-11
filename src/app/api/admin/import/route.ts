@@ -28,6 +28,7 @@ const AUTO_DETECT: Record<string, string[]> = {
   oldPrice: ["старая цена", "old price", "oldprice"],
   color: ["цвет", "color"],
   productType: ["тип", "type", "вид", "producttype"],
+  tags: ["теги", "ключевые слова", "tags", "keywords", "мета-теги"],
 };
 
 function autoDetectMapping(headers: string[]): Record<string, string> {
@@ -198,6 +199,7 @@ interface ImportProduct {
   color?: string;
   productType?: string;
   expirationDate?: string;
+  tags?: string;
 }
 
 // POST — import products (receive mapped data as JSON)
@@ -282,6 +284,7 @@ export async function POST(request: Request) {
       if (barcodeStr) updateData.barcode = barcodeStr;
       if (row.color) updateData.color = String(row.color);
       if (row.description) updateData.description = String(row.description);
+      if (row.tags) updateData.tags = String(row.tags);
       if (row.image) updateData.image = String(row.image);
       if (row.expirationDate) updateData.expirationDate = String(row.expirationDate);
 
@@ -294,7 +297,11 @@ export async function POST(request: Request) {
       let slug = slugify(name);
       const slugExists = await prisma.product.findFirst({ where: { slug } });
       if (slugExists) {
-        slug = slug + "-" + Math.random().toString(36).slice(2, 6);
+        let counter = 2;
+        while (await prisma.product.findFirst({ where: { slug: `${slug}-${counter}` } })) {
+          counter++;
+        }
+        slug = `${slug}-${counter}`;
       }
       const created = await prisma.product.create({
         data: {
@@ -315,6 +322,7 @@ export async function POST(request: Request) {
           volume,
           packSize,
           expirationDate: row.expirationDate ? String(row.expirationDate) : "",
+          tags: row.tags ? String(row.tags) : "",
           categoryId,
         },
       });

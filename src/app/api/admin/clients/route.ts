@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
 
-const SECRET = process.env.JWT_SECRET || "change-me-secret-key";
+const SECRET = process.env.JWT_SECRET || "tophit-secret-key-2024";
 
 function checkAdmin(req: NextRequest) {
   const auth = req.headers.get("authorization");

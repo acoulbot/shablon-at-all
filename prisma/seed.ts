@@ -173,8 +173,8 @@ async function main() {
   // Sample news
   const newsItems = [
     {
-      title: "Открытие нового интернет-магазина",
-      content: "<p>Рады сообщить об открытии нашего интернет-магазина!</p><p>Приглашаем всех ознакомиться с ассортиментом. В первые дни работы — скидки до <strong>20%</strong> на весь ассортимент.</p><p>Подробнее: <a href='/catalog'>перейти в каталог</a></p>",
+      title: "Открытие нового магазина ТОПХИТ",
+      content: "<p>Рады сообщить об открытии нового магазина <strong>ТОПХИТ</strong> в Москве!</p><p>Приглашаем всех на торжественное открытие. В первые дни работы — скидки до <strong>20%</strong> на весь ассортимент.</p><p>Подробнее: <a href='/catalog'>перейти в каталог</a></p>",
       published: true,
     },
     {
@@ -197,13 +197,6 @@ async function main() {
       create: { title: n.title, slug: s, content: n.content, published: n.published },
     });
   }
-
-  // Default site settings
-  await prisma.siteSettings.upsert({
-    where: { id: "main" },
-    update: {},
-    create: { id: "main" },
-  });
 
   console.log("Seed completed successfully");
 }

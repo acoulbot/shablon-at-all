@@ -2,6 +2,7 @@
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Image from "next/image";
 import { useState, useEffect, startTransition } from "react";
 import { useRouter } from "next/navigation";
 
@@ -282,22 +283,69 @@ export default function AccountPage() {
     return (
       <>
         <Header />
-        <main className="flex-1 bg-bg-light">
-          <div className="max-w-md mx-auto px-4 py-10">
-            <h1 className="font-heading text-2xl font-bold text-text-dark mb-6 text-center">
-              {resetMode ? "Восстановление пароля" : "Вход в систему"}
-            </h1>
-            <div className="bg-bg-white rounded-xl border border-border p-6">
+        <main className="flex-1 relative min-h-[80vh] flex items-center justify-center overflow-hidden">
+          {/* Homepage-like background behind blur */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+            <div className="bg-bg-light w-full h-full">
+              {/* Simulated header */}
+              <div className="bg-primary h-10" />
+              <div className="bg-white h-16 border-b border-border" />
+              {/* Simulated hero slider */}
+              <div className="max-w-7xl mx-auto px-4 mt-4">
+                <div className="bg-gradient-to-r from-primary/20 via-primary/10 to-accent/20 h-48 rounded-xl" />
+              </div>
+              {/* Simulated category grid */}
+              <div className="max-w-7xl mx-auto px-4 mt-6 grid grid-cols-4 gap-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="bg-white rounded-xl h-24 border border-border" />
+                ))}
+              </div>
+              {/* Simulated product cards */}
+              <div className="max-w-7xl mx-auto px-4 mt-6 grid grid-cols-4 gap-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="bg-white rounded-xl border border-border p-3">
+                    <div className="bg-bg-light aspect-square rounded-lg mb-2" />
+                    <div className="bg-border h-3 rounded w-3/4 mb-1" />
+                    <div className="bg-border h-3 rounded w-1/2 mb-2" />
+                    <div className="bg-primary/30 h-8 rounded-lg" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          {/* Blur overlay */}
+          <div className="absolute inset-0 backdrop-blur-3xl bg-white/35" />
+
+          {/* Login card with glass effect */}
+          <div className="relative z-10 w-full max-w-md mx-4 animate-fade-in-up">
+            {/* Logo */}
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-3 mb-2">
+                <Image src="/logo.png" alt="ТОПХИТ" width={56} height={56} className="w-14 h-14 drop-shadow-md" />
+                <span className="text-primary text-3xl font-extrabold font-heading tracking-tight">ТОПХИТ</span>
+              </div>
+              <p className="text-text-gray text-sm">
+                {resetMode ? "Восстановление доступа к аккаунту" : "Войдите для управления заказами и избранным"}
+              </p>
+            </div>
+
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-border p-6 sm:p-8 shadow-2xl">
               {resetMode ? (
                 <>
-                  {error && <p className="text-danger text-sm mb-4">{error}</p>}
-                  {success && <p className="text-success text-sm mb-4">{success}</p>}
+                  {error && <div className="bg-danger/10 border border-danger/30 text-danger text-sm rounded-lg px-4 py-2.5 mb-4 animate-fade-in">{error}</div>}
+                  {success && <div className="bg-success/10 border border-success/30 text-success text-sm rounded-lg px-4 py-2.5 mb-4 animate-fade-in">{success}</div>}
                   {resetStep === "email" ? (
                     <>
                       <p className="text-sm text-text-gray mb-4">Введите email, указанный при регистрации</p>
-                      <input type="email" placeholder="Email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)}
-                        className="w-full border border-border rounded-lg px-4 py-2.5 mb-4 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
-                      <button onClick={handleResetRequest} className="w-full bg-primary text-white py-2.5 rounded-lg hover:bg-primary-dark transition-colors font-medium">
+                      <div className="relative mb-4">
+                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <input type="email" placeholder="Email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)}
+                          className="w-full bg-white border border-border rounded-xl px-4 py-3 pl-10 text-text-dark placeholder-text-light focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" />
+                      </div>
+                      <button onClick={handleResetRequest}
+                        className="w-full bg-primary text-white py-3 rounded-xl hover:bg-primary-dark transition-all font-medium shadow-lg hover:shadow-xl active:scale-[0.98]">
                         Получить код
                       </button>
                     </>
@@ -305,67 +353,92 @@ export default function AccountPage() {
                     <>
                       <p className="text-sm text-text-gray mb-4">Введите код восстановления и новый пароль</p>
                       <input type="text" placeholder="Код восстановления" value={resetToken} onChange={(e) => setResetToken(e.target.value)}
-                        className="w-full border border-border rounded-lg px-4 py-2.5 mb-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
+                        className="w-full bg-white border border-border rounded-xl px-4 py-3 mb-3 text-text-dark placeholder-text-light focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" />
                       <input type="password" placeholder="Новый пароль (мин. 6 символов)" value={resetNewPassword} onChange={(e) => setResetNewPassword(e.target.value)}
-                        className="w-full border border-border rounded-lg px-4 py-2.5 mb-4 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
-                      <button onClick={handleResetPassword} className="w-full bg-primary text-white py-2.5 rounded-lg hover:bg-primary-dark transition-colors font-medium">
+                        className="w-full bg-white border border-border rounded-xl px-4 py-3 mb-4 text-text-dark placeholder-text-light focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" />
+                      <button onClick={handleResetPassword}
+                        className="w-full bg-primary text-white py-3 rounded-xl hover:bg-primary-dark transition-all font-medium shadow-lg hover:shadow-xl active:scale-[0.98]">
                         Сменить пароль
                       </button>
                     </>
                   )}
                   <button onClick={() => { setResetMode(false); setError(""); setSuccess(""); setResetStep("email"); }}
-                    className="w-full text-sm text-primary hover:underline mt-3 text-center">
-                    Вернуться ко входу
+                    className="w-full text-sm text-text-gray hover:text-primary mt-4 text-center transition-colors">
+                    ← Вернуться ко входу
                   </button>
                 </>
               ) : (
                 <>
-                  <div className="flex mb-6">
-                    <button onClick={() => setTab("login")} className={`flex-1 py-2 text-center font-medium border-b-2 ${tab === "login" ? "border-primary text-primary" : "border-transparent text-text-gray"}`}>Вход</button>
-                    <button onClick={() => setTab("register")} className={`flex-1 py-2 text-center font-medium border-b-2 ${tab === "register" ? "border-primary text-primary" : "border-transparent text-text-gray"}`}>Регистрация</button>
+                  {/* Tabs */}
+                  <div className="flex mb-6 bg-bg-light rounded-xl p-1">
+                    <button onClick={() => setTab("login")}
+                      className={`flex-1 py-2.5 text-center font-medium rounded-lg text-sm transition-all duration-300 ${
+                        tab === "login" ? "bg-primary text-white shadow-md" : "text-text-gray hover:text-primary"
+                      }`}>
+                      Вход
+                    </button>
+                    <button onClick={() => setTab("register")}
+                      className={`flex-1 py-2.5 text-center font-medium rounded-lg text-sm transition-all duration-300 ${
+                        tab === "register" ? "bg-primary text-white shadow-md" : "text-text-gray hover:text-primary"
+                      }`}>
+                      Регистрация
+                    </button>
                   </div>
-                  {error && <p className="text-danger text-sm mb-4">{error}</p>}
-                  {success && <p className="text-success text-sm mb-4">{success}</p>}
+
+                  {error && <div className="bg-danger/10 border border-danger/30 text-danger text-sm rounded-lg px-4 py-2.5 mb-4 animate-fade-in">{error}</div>}
+                  {success && <div className="bg-success/10 border border-success/30 text-success text-sm rounded-lg px-4 py-2.5 mb-4 animate-fade-in">{success}</div>}
 
                   {tab === "register" && verifyStep === "code" ? (
-                    <>
-                      <p className="text-sm text-text-dark mb-3">Введите код подтверждения, отправленный на <span className="font-medium">{form.email}</span></p>
-                      <input type="text" placeholder="6-значный код" value={verifyCode}
+                    <div className="animate-fade-in">
+                      <p className="text-sm text-text-gray mb-3">Введите код подтверждения, отправленный на <span className="font-medium text-text-dark">{form.email}</span></p>
+                      <input type="text" placeholder="000000" value={verifyCode}
                         onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                        className="w-full border border-border rounded-lg px-4 py-2.5 mb-4 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-center text-2xl tracking-[0.5em] font-mono" />
-                      <button onClick={handleVerifyAndRegister} className="w-full bg-primary text-white py-2.5 rounded-lg hover:bg-primary-dark transition-colors font-medium">
+                        className="w-full bg-white border border-border rounded-xl px-4 py-3 mb-4 text-text-dark placeholder-text-light focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 text-center text-2xl tracking-[0.5em] font-mono transition-all" />
+                      <button onClick={handleVerifyAndRegister}
+                        className="w-full bg-primary text-white py-3 rounded-xl hover:bg-primary-dark transition-all font-medium shadow-lg hover:shadow-xl active:scale-[0.98]">
                         Подтвердить и зарегистрироваться
                       </button>
                       <button onClick={() => { setVerifyStep("form"); setVerifyCode(""); setError(""); setSuccess(""); }}
-                        className="w-full text-sm text-primary hover:underline mt-3 text-center">
+                        className="w-full text-sm text-text-gray hover:text-primary mt-3 text-center transition-colors">
                         Изменить email
                       </button>
-                      <button onClick={handleAuth} className="w-full text-sm text-text-gray hover:underline mt-2 text-center">
+                      <button onClick={handleAuth} className="w-full text-sm text-text-light hover:text-primary mt-2 text-center transition-colors">
                         Отправить код повторно
                       </button>
-                    </>
+                    </div>
                   ) : (
-                    <>
-                      <input type="text" placeholder={tab === "login" ? "Email или Логин" : "Email"} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        className="w-full border border-border rounded-lg px-4 py-2.5 mb-3 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
-                      <input type="password" placeholder="Пароль" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
-                        className="w-full border border-border rounded-lg px-4 py-2.5 mb-4 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
-                      <button onClick={handleAuth} disabled={verifyLoading} className="w-full bg-primary text-white py-2.5 rounded-lg hover:bg-primary-dark transition-colors font-medium disabled:opacity-50">
+                    <div className="animate-fade-in">
+                      <div className="relative mb-3">
+                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <input type="text" placeholder={tab === "login" ? "Email или Логин" : "Email"} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
+                          className="w-full bg-white border border-border rounded-xl px-4 py-3 pl-10 text-text-dark placeholder-text-light focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" />
+                      </div>
+                      <div className="relative mb-4">
+                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        <input type="password" placeholder="Пароль" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
+                          className="w-full bg-white border border-border rounded-xl px-4 py-3 pl-10 text-text-dark placeholder-text-light focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all" />
+                      </div>
+                      <button onClick={handleAuth} disabled={verifyLoading}
+                        className="w-full bg-primary text-white py-3 rounded-xl hover:bg-primary-dark transition-all font-medium shadow-lg hover:shadow-xl disabled:opacity-50 active:scale-[0.98]">
                         {verifyLoading ? "Отправка кода..." : tab === "login" ? "Войти" : "Зарегистрироваться"}
                       </button>
                       {tab === "login" && (
                         <>
                           <button onClick={() => { setResetMode(true); setError(""); setSuccess(""); }}
-                            className="w-full text-sm text-primary hover:underline mt-3 text-center">
+                            className="w-full text-sm text-text-gray hover:text-primary mt-4 text-center transition-colors">
                             Забыли пароль?
                           </button>
-                          <p className="text-xs text-text-gray text-center mt-2">Используйте email для клиентов или логин для администраторов</p>
+                          <p className="text-xs text-text-light text-center mt-2">Используйте email для клиентов или логин для администраторов</p>
                         </>
                       )}
                       {tab === "register" && (
-                        <p className="text-xs text-text-gray text-center mt-3">На ваш email будет отправлен код подтверждения</p>
+                        <p className="text-xs text-text-light text-center mt-3">На ваш email будет отправлен код подтверждения</p>
                       )}
-                    </>
+                    </div>
                   )}
                 </>
               )}
@@ -446,7 +519,7 @@ export default function AccountPage() {
                   </div>
                   <div>
                     <label className="text-sm text-text-gray mb-1 block">Регион / Область</label>
-                    <input type="text" placeholder="г. Ваш город" value={editForm.region} onChange={(e) => setEditForm({ ...editForm, region: e.target.value })}
+                    <input type="text" placeholder="г. Москва" value={editForm.region} onChange={(e) => setEditForm({ ...editForm, region: e.target.value })}
                       className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary" />
                   </div>
                   <div>

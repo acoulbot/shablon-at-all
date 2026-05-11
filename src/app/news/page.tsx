@@ -10,16 +10,16 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Новости — Магазин",
-  description: "Новости Магазин: новые поставки, акции, специальные предложения для оптовых и розничных покупателей. Статьи о товарах и обновления ассортимента.",
+  title: "Новости — ТОПХИТ",
+  description: "Новости ТОПХИТ: новые поставки, акции, специальные предложения для оптовых и розничных покупателей. Статьи о товарах и обновления ассортимента.",
   openGraph: {
-    title: "Новости — Магазин",
-    description: "Новости и обновления магазина Магазин",
+    title: "Новости — ТОПХИТ",
+    description: "Новости и обновления магазина ТОПХИТ",
     locale: "ru_RU",
     type: "website",
-    url: "/news",
+    url: "https://tophitt.ru/news",
   },
-  alternates: { canonical: "/news" },
+  alternates: { canonical: "https://tophitt.ru/news" },
 };
 
 export default async function NewsPage(props: { searchParams: Promise<{ type?: string }> }) {

@@ -37,13 +37,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const category = await resolveCategory(slug);
   if (!category) return {};
   const canonicalPath = getCategoryPath(category);
-  const title = category.metaTitle || `${category.name} — купить в Магазин`;
-  const description = category.metaDescription || `Купить ${category.name} в магазине Магазин. Широкий ассортимент, выгодные цены, доставка по Москве и МО.`;
+  const title = category.metaTitle || `${category.name} — купить в ТОПХИТ`;
+  const description = category.metaDescription || `Купить ${category.name} в магазине ТОПХИТ. Широкий ассортимент, выгодные цены, доставка по Москве и МО.`;
   return {
     title,
     description,
-    openGraph: { title, description, locale: "ru_RU", type: "website", url: `${canonicalPath}` },
-    alternates: { canonical: `${canonicalPath}` },
+    openGraph: { title, description, locale: "ru_RU", type: "website", url: `https://tophitt.ru${canonicalPath}` },
+    alternates: { canonical: `https://tophitt.ru${canonicalPath}` },
   };
 }
 
@@ -118,17 +118,28 @@ async function CategoryContent({
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: category.name,
-    description: category.metaDescription || `Купить ${category.name} в магазине Магазин`,
-    url: `${categoryPath}`,
+    description: category.metaDescription || `Купить ${category.name} в магазине ТОПХИТ`,
+    url: `https://tophitt.ru${categoryPath}`,
     mainEntity: {
       "@type": "ItemList",
       numberOfItems: totalCount,
       itemListElement: products.map((p, i) => ({
         "@type": "ListItem",
         position: skip + i + 1,
-        url: `/product/${p.slug}`,
-        name: p.name,
-        image: p.image || undefined,
+        url: `https://tophitt.ru/product/${p.slug}`,
+        item: {
+          "@type": "Product",
+          name: p.name,
+          url: `https://tophitt.ru/product/${p.slug}`,
+          image: p.image || undefined,
+          offers: {
+            "@type": "Offer",
+            priceCurrency: "RUB",
+            price: p.price,
+            availability: p.inStock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+            itemCondition: "https://schema.org/NewCondition",
+          },
+        },
       })),
     },
   };

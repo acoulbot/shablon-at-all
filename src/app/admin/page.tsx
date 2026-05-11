@@ -43,6 +43,7 @@ interface Product {
   categoryId: string;
   category?: Category;
   packSize: number | null;
+  tags: string;
 }
 
 interface ImportRow {
@@ -106,7 +107,7 @@ const statusLabels: Record<string, string> = {
   cancelled: "Отменён",
 };
 
-type TabType = "analytics" | "categories" | "products" | "popular" | "slider" | "news" | "orders" | "callbacks" | "clients" | "settings" | "site-editor" | "site-settings";
+type TabType = "analytics" | "categories" | "products" | "popular" | "slider" | "news" | "orders" | "callbacks" | "clients" | "settings" | "site-editor";
 
 interface CallbackItem {
   id: string;
@@ -118,7 +119,7 @@ interface CallbackItem {
 
 interface AnalyticsData {
   period: string;
-  data: { date: string; views: number; unique: number }[];
+  data: { date: string; label: string; views: number; unique: number }[];
   totalViews: number;
   totalUniqueVisitors: number;
   topPages: { path: string; views: number }[];
@@ -261,7 +262,7 @@ export default function AdminPage() {
 
   const [prodForm, setProdForm] = useState({
     name: "", description: "", price: "", oldPrice: "", image: "", image2: "", image3: "", image4: "",
-    inStock: "0", packSize: "", expirationDate: "", brand: "", color: "", productType: "", categoryId: "", isFeatured: false,
+    inStock: "0", packSize: "", expirationDate: "", brand: "", color: "", productType: "", categoryId: "", isFeatured: false, tags: "",
   });
   const [editingProd, setEditingProd] = useState<Product | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
@@ -399,7 +400,7 @@ export default function AdminPage() {
     const method = editingProd ? "PUT" : "POST";
     const body = editingProd ? { id: editingProd.id, ...prodForm } : prodForm;
     await fetch("/api/admin/products", { method, headers: hdrs(), body: JSON.stringify(body) });
-    setProdForm({ name: "", description: "", price: "", oldPrice: "", image: "", image2: "", image3: "", image4: "", inStock: "0", packSize: "", expirationDate: "", brand: "", color: "", productType: "", categoryId: "", isFeatured: false });
+    setProdForm({ name: "", description: "", price: "", oldPrice: "", image: "", image2: "", image3: "", image4: "", inStock: "0", packSize: "", expirationDate: "", brand: "", color: "", productType: "", categoryId: "", isFeatured: false, tags: "" });
     setEditingProd(null); fetchData();
   };
 
@@ -455,6 +456,57 @@ export default function AdminPage() {
     setSelectedProducts(new Set());
     setBulkCategoryId("");
     fetchData();
+  };
+
+  const exportProducts = async () => {
+    if (selectedProducts.size === 0) return;
+    const res = await fetch("/api/admin/export", {
+      method: "POST",
+      headers: hdrs(),
+      body: JSON.stringify({ ids: Array.from(selectedProducts) }),
+    });
+    if (!res.ok) return;
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `products_export_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportNoTags = async () => {
+    const res = await fetch("/api/admin/export", {
+      method: "POST",
+      headers: hdrs(),
+      body: JSON.stringify({ filter: "no-tags" }),
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      alert(data.error || "Ошибка экспорта");
+      return;
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `products_no_tags_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const bulkSetStock = async (stock: number) => {
+    if (!confirm(`Установить остаток ${stock.toLocaleString()} на ВСЕ товары (${products.length} шт)?`)) return;
+    const res = await fetch("/api/admin/products", {
+      method: "PUT",
+      headers: hdrs(),
+      body: JSON.stringify({ bulkStock: stock }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      alert(`Обновлено ${data.updated} товаров`);
+      fetchData();
+    }
   };
 
   const uploadImage = async (file: File, field: string) => {
@@ -552,6 +604,7 @@ export default function AdminPage() {
     { value: "oldPrice", label: "Старая цена" },
     { value: "color", label: "Цвет" },
     { value: "productType", label: "Тип/Вид" },
+    { value: "tags", label: "Теги" },
   ];
 
   // Import — step 1: upload file to server for fast parsing
@@ -739,7 +792,7 @@ export default function AdminPage() {
             <div className="w-14 h-14 bg-primary rounded-xl flex items-center justify-center mx-auto mb-3">
               <span className="text-white font-bold text-2xl">Т</span>
             </div>
-            <h1 className="text-xl font-bold text-text-dark">Админ-панель Админ-панель</h1>
+            <h1 className="text-xl font-bold text-text-dark">Админ-панель ТОПХИТ</h1>
             <p className="text-sm text-text-gray mt-1">Введите данные для входа</p>
           </div>
           <form onSubmit={login} className="space-y-4">
@@ -760,7 +813,7 @@ export default function AdminPage() {
 
   const topCategories = categories.filter((c) => !c.parentId);
   const tabLabels: Record<TabType, string> = {
-    analytics: "Статистика", categories: "Категории", products: "Товары", popular: "Популярные", slider: "Слайдер", news: "Новости", orders: `Заказы (${orders.length})`, callbacks: `Заявки на звонок`, clients: "Клиенты", "site-editor": "Редактирование сайта", "site-settings": "⚙️ Настройки сайта", settings: "Аккаунт",
+    analytics: "Статистика", categories: "Категории", products: "Товары", popular: "Популярные", slider: "Слайдер", news: "Новости", orders: `Заказы (${orders.length})`, callbacks: `Заявки на звонок`, clients: "Клиенты", "site-editor": "Редактирование сайта", settings: "Настройки",
   };
 
   return (
@@ -769,9 +822,9 @@ export default function AdminPage() {
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">⚙</span>
+              <span className="text-white font-bold">Т</span>
             </div>
-            <h1 className="text-lg font-bold text-text-dark">Админ-панель</h1>
+            <h1 className="text-lg font-bold text-text-dark">ТОПХИТ — Админ</h1>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/" className="text-sm text-primary hover:underline">На сайт</Link>
@@ -1083,11 +1136,26 @@ export default function AdminPage() {
                   <option value="">Выберите категорию *</option>
                   {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.parentId ? `  └ ${cat.name}` : cat.name}</option>)}
                 </select>
-                <textarea placeholder="Описание" value={prodForm.description} onChange={(e) => setProdForm({ ...prodForm, description: e.target.value })}
-                  className="md:col-span-2 lg:col-span-3 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" rows={2} />
+                <div className="md:col-span-2 lg:col-span-3 relative">
+                  <textarea placeholder="Описание" value={prodForm.description} onChange={(e) => setProdForm({ ...prodForm, description: e.target.value })}
+                    className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary pr-10" rows={2} />
+                  {prodForm.name && (
+                    <button type="button" title="Сгенерировать описание через ИИ-поиск" onClick={() => {
+                      const query = `Напиши короткое SEO-описание товара "${prodForm.name}" для интернет-магазина, 2-3 предложения`;
+                      window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, "_blank");
+                    }} className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-md transition-all hover:scale-110 cursor-pointer">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" /></svg>
+                    </button>
+                  )}
+                </div>
+                <div className="md:col-span-2 lg:col-span-3">
+                  <input type="text" placeholder="Теги / ключевые слова (через запятую)" value={prodForm.tags} onChange={(e) => setProdForm({ ...prodForm, tags: e.target.value })}
+                    className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+                  <p className="text-xs text-text-gray mt-1">Мета-теги для поисковиков. Не видны клиентам на сайте.</p>
+                </div>
                 <div className="md:col-span-2 lg:col-span-3 flex items-center gap-4">
                   <button type="submit" className="bg-primary hover:bg-primary-dark text-white text-sm px-6 py-2 rounded-lg">{editingProd ? "Сохранить" : "Добавить"}</button>
-                  {editingProd && <button type="button" onClick={() => { setEditingProd(null); setProdForm({ name: "", description: "", price: "", oldPrice: "", image: "", image2: "", image3: "", image4: "", inStock: "0", packSize: "", expirationDate: "", brand: "", color: "", productType: "", categoryId: "", isFeatured: false }); }} className="px-4 bg-bg-light text-text-gray text-sm py-2 rounded-lg">Отмена</button>}
+                  {editingProd && <button type="button" onClick={() => { setEditingProd(null); setProdForm({ name: "", description: "", price: "", oldPrice: "", image: "", image2: "", image3: "", image4: "", inStock: "0", packSize: "", expirationDate: "", brand: "", color: "", productType: "", categoryId: "", isFeatured: false, tags: "" }); }} className="px-4 bg-bg-light text-text-gray text-sm py-2 rounded-lg">Отмена</button>}
                   <label className="flex items-center gap-2 text-sm cursor-pointer ml-auto border border-yellow-300 bg-yellow-50 rounded-lg px-3 py-2">
                     <input type="checkbox" checked={prodForm.isFeatured} onChange={(e) => setProdForm({ ...prodForm, isFeatured: e.target.checked })} className="accent-yellow-500 w-4 h-4" />
                     <svg className="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
@@ -1112,11 +1180,28 @@ export default function AdminPage() {
                           Применить ({selectedProducts.size})
                         </button>
                       )}
+                      <button onClick={exportProducts} className="bg-accent hover:bg-blue-600 text-white text-sm px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        Выгрузить ({selectedProducts.size})
+                      </button>
                       <button onClick={bulkDeleteProducts} className="bg-danger hover:bg-red-700 text-white text-sm px-3 py-1.5 rounded-lg transition-colors">
                         Удалить ({selectedProducts.size})
                       </button>
                     </>
                   )}
+                  <button onClick={() => bulkSetStock(10000)} className="bg-emerald-500 hover:bg-emerald-600 text-white text-sm px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1" title="Установить остаток 10 000 на все товары">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+                    Остаток 10 000
+                  </button>
+                  {(() => {
+                    const noTagsCount = products.filter((p) => !p.tags).length;
+                    return noTagsCount > 0 ? (
+                      <button onClick={exportNoTags} className="bg-orange-500 hover:bg-orange-600 text-white text-sm px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1" title="Скачать товары без мета-тегов">
+                        <span className="inline-flex items-center justify-center w-4 h-4 bg-white text-orange-600 rounded-full text-xs font-bold">!</span>
+                        Без тегов ({noTagsCount})
+                      </button>
+                    ) : null;
+                  })()}
                 </div>
               </div>
               <div className="flex items-center gap-3 mb-3 flex-wrap">
@@ -1166,7 +1251,11 @@ export default function AdminPage() {
                               <div className="w-10 h-10 rounded bg-bg-light border border-border flex items-center justify-center text-text-gray text-xs">—</div>
                             )}
                           </td>
-                          <td className="py-2 px-2 text-text-dark">{prod.isFeatured && <svg className="w-4 h-4 text-yellow-500 inline mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>}{prod.name}</td>
+                          <td className="py-2 px-2 text-text-dark">
+                            {prod.isFeatured && <svg className="w-4 h-4 text-yellow-500 inline mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>}
+                            {!prod.tags && <span title="Нет мета-тегов" className="inline-flex items-center justify-center w-4 h-4 bg-orange-100 text-orange-600 rounded-full text-xs font-bold mr-1 cursor-help">!</span>}
+                            {prod.name}
+                          </td>
                           <td className="py-2 px-2 text-text-gray">{prod.category?.name}</td>
                           <td className="py-2 px-2 text-right font-medium">{prod.price.toLocaleString("ru-RU")} ₽</td>
                           <td className="py-2 px-2 text-right">{prod.inStock}</td>
@@ -1176,7 +1265,7 @@ export default function AdminPage() {
                             <button onClick={() => searchProduct(prod.name)} className="text-accent hover:underline mr-2" title="Поиск в интернете">
                               <svg className="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                             </button>
-                            <button onClick={() => { setEditingProd(prod); setProdForm({ name: prod.name, description: prod.description, price: String(prod.price), oldPrice: prod.oldPrice ? String(prod.oldPrice) : "", image: prod.image, image2: prod.image2 || "", image3: prod.image3 || "", image4: prod.image4 || "", inStock: String(prod.inStock), packSize: prod.packSize ? String(prod.packSize) : "", expirationDate: prod.expirationDate || "", brand: prod.brand, color: prod.color, productType: prod.productType, categoryId: prod.categoryId, isFeatured: prod.isFeatured || false }); }} className="text-primary hover:underline mr-2">Изменить</button>
+                            <button onClick={() => { setEditingProd(prod); setProdForm({ name: prod.name, description: prod.description, price: String(prod.price), oldPrice: prod.oldPrice ? String(prod.oldPrice) : "", image: prod.image, image2: prod.image2 || "", image3: prod.image3 || "", image4: prod.image4 || "", inStock: String(prod.inStock), packSize: prod.packSize ? String(prod.packSize) : "", expirationDate: prod.expirationDate || "", brand: prod.brand, color: prod.color, productType: prod.productType, categoryId: prod.categoryId, isFeatured: prod.isFeatured || false, tags: prod.tags || "" }); }} className="text-primary hover:underline mr-2">Изменить</button>
                             <button onClick={() => deleteProduct(prod.id)} className="text-danger hover:underline">Удалить</button>
                           </td>
                         </tr>
@@ -1292,7 +1381,7 @@ export default function AdminPage() {
                       <span className="w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">{idx + 1}</span>
                       <div className="w-20 h-14 bg-border rounded overflow-hidden flex-shrink-0">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={slide.imageUrl} alt={slide.title || "слайд"} className="w-full h-full object-cover" />
+                        <img src={slide.imageUrl} alt={slide.title ? `${slide.title} — слайд` : `Слайд ${idx + 1}`} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-text-dark text-sm truncate">{slide.title || "Без названия"}</p>
@@ -1521,10 +1610,7 @@ export default function AdminPage() {
         {/* Clients */}
         {activeTab === "clients" && <ClientsPanel token={token} />}
 
-        {/* Site Settings */}
-        {activeTab === "site-settings" && <SiteSettingsPanel token={token} />}
-
-        {/* Account Settings */}
+        {/* Settings */}
         {activeTab === "settings" && (
           <div className="max-w-lg">
             <div className="bg-bg-white rounded-xl border border-border p-5">
@@ -1579,14 +1665,11 @@ function AnalyticsPanel({ token }: { token: string }) {
   }, [period, token]);
 
   const maxViews = data ? Math.max(...data.data.map((d) => d.views), 1) : 1;
-
-  const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr + "T00:00:00");
-    if (period === "day") return d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
-    return d.toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
-  };
+  const maxUnique = data ? Math.max(...data.data.map((d) => d.unique), 1) : 1;
+  const maxVal = Math.max(maxViews, maxUnique, 1);
 
   const periodLabels = { day: "Сегодня", week: "Неделя", month: "Месяц" };
+  const avgLabel = period === "day" ? "в час" : "в день";
 
   return (
     <div className="space-y-6">
@@ -1623,16 +1706,16 @@ function AnalyticsPanel({ token }: { token: string }) {
               <p className="text-xs text-text-light mt-1">за {periodLabels[period].toLowerCase()}</p>
             </div>
             <div className="bg-bg-white rounded-xl border border-border p-5">
-              <p className="text-sm text-text-gray mb-1">Среднее в день</p>
+              <p className="text-sm text-text-gray mb-1">Среднее {avgLabel}</p>
               <p className="text-3xl font-bold text-text-dark">
                 {data.data.length > 0 ? Math.round(data.totalViews / data.data.length).toLocaleString("ru-RU") : 0}
               </p>
-              <p className="text-xs text-text-light mt-1">просмотров/день</p>
+              <p className="text-xs text-text-light mt-1">просмотров</p>
             </div>
             <div className="bg-bg-white rounded-xl border border-border p-5">
               <p className="text-sm text-text-gray mb-1">Популярных страниц</p>
               <p className="text-3xl font-bold text-text-dark">{data.topPages.length}</p>
-              <p className="text-xs text-text-light mt-1">уникальных страниц</p>
+              <p className="text-xs text-text-light mt-1">уникальных URL</p>
             </div>
           </div>
 
@@ -1644,25 +1727,33 @@ function AnalyticsPanel({ token }: { token: string }) {
                 <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-sm bg-accent/80 inline-block"></span> Уникальные</span>
               </div>
             </div>
-            <div className="flex items-end gap-1 h-48">
-              {data.data.map((d, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1 min-w-0">
-                  <span className="text-[10px] text-text-gray font-medium">{d.views || ""}</span>
-                  <div className="w-full flex gap-px justify-center" style={{ height: `${Math.max((d.views / maxViews) * 100, 2)}%` }}>
-                    <div
-                      className="flex-1 bg-primary/80 hover:bg-primary rounded-t transition-colors min-h-[2px]"
-                      title={`${formatDate(d.date)}: ${d.views} просмотров`}
-                    />
-                    <div
-                      className="flex-1 bg-accent/80 hover:bg-accent rounded-t transition-colors min-h-[2px]"
-                      style={{ height: d.views > 0 ? `${Math.max((d.unique / d.views) * 100, 5)}%` : "2px" }}
-                      title={`${formatDate(d.date)}: ${d.unique} уникальных`}
-                    />
+            <div className="flex items-end gap-1 h-52">
+              {data.data.map((d, i) => {
+                const viewsH = Math.max((d.views / maxVal) * 100, d.views > 0 ? 4 : 0);
+                const uniqueH = Math.max((d.unique / maxVal) * 100, d.unique > 0 ? 4 : 0);
+                return (
+                  <div key={i} className="flex-1 flex flex-col items-center gap-1 min-w-0">
+                    <span className="text-[10px] text-text-gray font-medium">{d.views || ""}</span>
+                    <div className="w-full flex gap-px justify-center items-end" style={{ height: `${Math.max(viewsH, uniqueH, 2)}%` }}>
+                      <div
+                        className="flex-1 bg-primary/80 hover:bg-primary rounded-t transition-colors"
+                        style={{ height: `${viewsH > 0 ? Math.max((d.views / Math.max(d.views, d.unique, 1)) * 100, 8) : 2}%`, minHeight: "2px" }}
+                        title={`${d.label}: ${d.views} просмотров`}
+                      />
+                      <div
+                        className="flex-1 bg-accent/80 hover:bg-accent rounded-t transition-colors"
+                        style={{ height: `${uniqueH > 0 ? Math.max((d.unique / Math.max(d.views, d.unique, 1)) * 100, 8) : 2}%`, minHeight: "2px" }}
+                        title={`${d.label}: ${d.unique} уникальных`}
+                      />
+                    </div>
+                    <span className="text-[9px] text-text-light truncate w-full text-center">{d.label}</span>
                   </div>
-                  <span className="text-[9px] text-text-light truncate w-full text-center">{formatDate(d.date)}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
+            {data.data.length === 0 && (
+              <p className="text-center text-text-gray text-sm py-8">Нет данных за выбранный период</p>
+            )}
           </div>
 
           {data.topPages.length > 0 && (
@@ -1675,7 +1766,7 @@ function AnalyticsPanel({ token }: { token: string }) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-sm text-text-dark truncate">{page.path}</span>
-                        <span className="text-sm text-text-gray flex-shrink-0">{page.views}</span>
+                        <span className="text-sm font-medium text-text-gray flex-shrink-0">{page.views} просм.</span>
                       </div>
                       <div className="mt-1 h-1.5 bg-bg-light rounded-full overflow-hidden">
                         <div
@@ -1696,7 +1787,7 @@ function AnalyticsPanel({ token }: { token: string }) {
               Для детальной аналитики используйте внешние сервисы:
             </p>
             <div className="flex flex-wrap gap-3">
-              <a href="https://metrika.yandex.ru/dashboard?id=YOUR_METRIKA_ID" target="_blank" rel="noopener noreferrer"
+              <a href="https://metrika.yandex.ru/dashboard?id=109025489" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-bg-light border border-border rounded-lg text-sm text-text-dark hover:text-primary hover:border-primary transition-colors">
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
                 Яндекс.Метрика
@@ -2019,149 +2110,6 @@ function ClientsPanel({ token }: { token: string }) {
           )}
         </div>
       )}
-    </div>
-  );
-}
-
-function SiteSettingsPanel({ token }: { token: string }) {
-  const [settings, setSettings] = useState({
-    siteName: "", siteDescription: "", siteKeywords: "",
-    logoUrl: "", faviconUrl: "",
-    phone: "", email: "", emailWholesale: "", emailSuppliers: "",
-    address: "", workingHours: "", pickupAddress: "", pickupHours: "",
-    socialTelegram: "", socialVk: "", socialWhatsapp: "",
-    colorPrimary: "#e94560", colorAccent: "#f59e0b", colorDanger: "#ef4444", colorSuccess: "#22c55e", colorBgLight: "#f8f9fa",
-    ogTitle: "", ogDescription: "", footerText: "",
-    packDiscount: 10, freeDeliveryFrom: 5000,
-  });
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [msg, setMsg] = useState("");
-
-  useEffect(() => {
-    fetch("/api/admin/settings", { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json())
-      .then(data => { setSettings(prev => ({ ...prev, ...data })); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, [token]);
-
-  const save = async () => {
-    setSaving(true);
-    setMsg("");
-    try {
-      const res = await fetch("/api/admin/settings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(settings),
-      });
-      if (res.ok) setMsg("Настройки сохранены!");
-      else setMsg("Ошибка сохранения");
-    } catch { setMsg("Ошибка сети"); }
-    setSaving(false);
-  };
-
-  const Field = ({ label, field, type = "text", placeholder = "" }: { label: string; field: string; type?: string; placeholder?: string }) => (
-    <div>
-      <label className="text-sm text-text-gray mb-1 block">{label}</label>
-      <input type={type} placeholder={placeholder}
-        value={(settings as Record<string, string | number>)[field] ?? ""}
-        onChange={(e) => setSettings({ ...settings, [field]: type === "number" ? Number(e.target.value) : e.target.value })}
-        className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary text-sm" />
-    </div>
-  );
-
-  if (loading) return <div className="text-center py-12 text-text-gray">Загрузка...</div>;
-
-  return (
-    <div className="max-w-3xl space-y-6">
-      {msg && <p className={`text-sm p-3 rounded-lg ${msg.includes("Ошибка") ? "bg-danger/10 text-danger" : "bg-success/10 text-success"}`}>{msg}</p>}
-
-      {/* General */}
-      <div className="bg-bg-white rounded-xl border border-border p-5">
-        <h3 className="font-bold text-text-dark mb-4">🏪 Основная информация</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Название магазина" field="siteName" placeholder="Мой магазин" />
-          <Field label="Описание" field="siteDescription" placeholder="Интернет-магазин товаров" />
-          <Field label="Ключевые слова (SEO)" field="siteKeywords" placeholder="магазин, товары, доставка" />
-          <Field label="URL логотипа" field="logoUrl" placeholder="/logo.png" />
-          <Field label="URL фавикона" field="faviconUrl" placeholder="/favicon-32x32.png" />
-        </div>
-      </div>
-
-      {/* Contacts */}
-      <div className="bg-bg-white rounded-xl border border-border p-5">
-        <h3 className="font-bold text-text-dark mb-4">📞 Контакты</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Телефон" field="phone" placeholder="+7 (000) 000-00-00" />
-          <Field label="Email основной" field="email" placeholder="zakaz@example.ru" />
-          <Field label="Email опт" field="emailWholesale" placeholder="opt@example.ru" />
-          <Field label="Email поставщики" field="emailSuppliers" placeholder="info@example.ru" />
-          <Field label="Адрес" field="address" placeholder="г. Москва, ул. Примерная, д. 1" />
-          <Field label="Время работы" field="workingHours" placeholder="ПН-ПТ с 09:00 до 18:00" />
-          <Field label="Адрес самовывоза" field="pickupAddress" placeholder="г. Москва, ул. Примерная, д. 1" />
-          <Field label="Время самовывоза" field="pickupHours" placeholder="ПН-ПТ с 11:00 до 16:00" />
-        </div>
-      </div>
-
-      {/* Social */}
-      <div className="bg-bg-white rounded-xl border border-border p-5">
-        <h3 className="font-bold text-text-dark mb-4">🌐 Соцсети</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Field label="Telegram" field="socialTelegram" placeholder="https://t.me/your_channel" />
-          <Field label="ВКонтакте" field="socialVk" placeholder="https://vk.com/your_group" />
-          <Field label="WhatsApp" field="socialWhatsapp" placeholder="https://wa.me/70000000000" />
-        </div>
-      </div>
-
-      {/* Colors */}
-      <div className="bg-bg-white rounded-xl border border-border p-5">
-        <h3 className="font-bold text-text-dark mb-4">🎨 Цветовая гамма</h3>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          {[
-            { label: "Основной", field: "colorPrimary" },
-            { label: "Акцентный", field: "colorAccent" },
-            { label: "Ошибка", field: "colorDanger" },
-            { label: "Успех", field: "colorSuccess" },
-            { label: "Фон", field: "colorBgLight" },
-          ].map(c => (
-            <div key={c.field}>
-              <label className="text-sm text-text-gray mb-1 block">{c.label}</label>
-              <div className="flex items-center gap-2">
-                <input type="color" value={(settings as Record<string, string | number>)[c.field] as string}
-                  onChange={(e) => setSettings({ ...settings, [c.field]: e.target.value })}
-                  className="w-10 h-10 rounded border border-border cursor-pointer" />
-                <input type="text" value={(settings as Record<string, string | number>)[c.field] as string}
-                  onChange={(e) => setSettings({ ...settings, [c.field]: e.target.value })}
-                  className="flex-1 border border-border rounded-lg px-3 py-2 text-xs font-mono" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* SEO */}
-      <div className="bg-bg-white rounded-xl border border-border p-5">
-        <h3 className="font-bold text-text-dark mb-4">🔍 SEO и Open Graph</h3>
-        <div className="grid grid-cols-1 gap-4">
-          <Field label="OG Title (заголовок при шаринге)" field="ogTitle" placeholder="Магазин — лучшие цены" />
-          <Field label="OG Description" field="ogDescription" placeholder="Описание для соцсетей и мессенджеров" />
-          <Field label="Текст в подвале" field="footerText" placeholder="Описание компании для подвала сайта" />
-        </div>
-      </div>
-
-      {/* Commerce */}
-      <div className="bg-bg-white rounded-xl border border-border p-5">
-        <h3 className="font-bold text-text-dark mb-4">💰 Коммерция</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Скидка за упаковку (%)" field="packDiscount" type="number" placeholder="10" />
-          <Field label="Бесплатная доставка от (₽)" field="freeDeliveryFrom" type="number" placeholder="5000" />
-        </div>
-      </div>
-
-      <button onClick={save} disabled={saving}
-        className="bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-lg transition-colors font-bold disabled:opacity-50">
-        {saving ? "Сохранение..." : "💾 Сохранить настройки"}
-      </button>
     </div>
   );
 }

@@ -50,6 +50,7 @@ model Product {
   volume      Float?
   packSize    Int?
   expirationDate String      @default("")
+  tags        String         @default("")
   isFeatured  Boolean        @default(false)
   categoryId  String
   category    Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
@@ -185,9 +186,11 @@ model PageView {
   id        String   @id @default(uuid())
   path      String
   date      String
+  hour      Int      @default(0)
   visitorId String   @default("")
   createdAt DateTime @default(now())
 
+  @@unique([date, visitorId, path])
   @@index([date])
   @@index([path])
   @@index([visitorId])
@@ -254,35 +257,4 @@ model EmailVerification {
   code      String
   expiresAt DateTime
   createdAt DateTime @default(now())
-}
-
-model SiteSettings {
-  id               String @id @default("main")
-  siteName         String @default("Мой магазин")
-  siteDescription  String @default("Интернет-магазин товаров")
-  siteKeywords     String @default("")
-  logoUrl          String @default("")
-  faviconUrl       String @default("")
-  phone            String @default("")
-  email            String @default("")
-  emailWholesale   String @default("")
-  emailSuppliers   String @default("")
-  address          String @default("")
-  workingHours     String @default("ПН-ПТ с 09:00 до 18:00")
-  pickupAddress    String @default("")
-  pickupHours      String @default("")
-  socialTelegram   String @default("")
-  socialVk         String @default("")
-  socialWhatsapp   String @default("")
-  colorPrimary     String @default("#e94560")
-  colorAccent      String @default("#f59e0b")
-  colorDanger      String @default("#ef4444")
-  colorSuccess     String @default("#22c55e")
-  colorBgLight     String @default("#f8f9fa")
-  ogTitle          String @default("")
-  ogDescription    String @default("")
-  footerText       String @default("")
-  packDiscount     Int    @default(10)
-  freeDeliveryFrom Int    @default(5000)
-  updatedAt        DateTime @updatedAt
 }
