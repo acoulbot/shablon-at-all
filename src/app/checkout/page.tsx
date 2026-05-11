@@ -181,14 +181,14 @@ export default function CheckoutPage() {
                         className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${!isPickup ? "bg-primary text-white" : "bg-bg-light text-text-gray border border-border"}`}>
                         Доставка
                       </button>
-                      <button onClick={() => { setIsPickup(true); setForm({ ...form, address: "Самовывоз: Укажите адрес в настройках" }); }}
+                      <button onClick={() => { setIsPickup(true); setForm({ ...form, address: "Самовывоз: Москва, ул. Складочная, 1, стр. 18" }); }}
                         className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${isPickup ? "bg-green-600 text-white" : "bg-bg-light text-text-gray border border-border"}`}>
                         Самовывоз
                       </button>
                     </div>
                     {isPickup && (
                       <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700">
-                        <p className="font-medium">Укажите адрес в настройках</p>
+                        <p className="font-medium">Москва, ул. Складочная, 1, стр. 18</p>
                         <p>Пн–Пт с 11:00 до 16:00, выходной — Сб и Вск</p>
                       </div>
                     )}

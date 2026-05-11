@@ -104,7 +104,7 @@ export function getCategoryUrl(
   category: { slug: string; parent?: { slug: string } | null },
 ): string {
   if (category.parent) {
-    return `https:///catalog/${category.parent.slug}/${category.slug}`;
+    return `https://tophitt.ru/catalog/${category.parent.slug}/${category.slug}`;
   }
-  return `https:///catalog/${category.slug}`;
+  return `https://tophitt.ru/catalog/${category.slug}`;
 }

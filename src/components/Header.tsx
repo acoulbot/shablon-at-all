@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Ripple from "./Ripple";
 
 interface SearchResult {
   id: string;
@@ -19,19 +20,13 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [cartCount, setCartCount] = useState(0);
+  const [cartSwing, setCartSwing] = useState(false);
+  const prevCartCount = useRef(0);
   const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [siteName, setSiteName] = useState("Мой магазин");
-  const [logoUrl, setLogoUrl] = useState("/logo.png");
+  const [userLabel, setUserLabel] = useState<string | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-
-  useEffect(() => {
-    fetch("/api/settings").then(r => r.json()).then(s => {
-      if (s.siteName) setSiteName(s.siteName);
-      if (s.logoUrl) setLogoUrl(s.logoUrl);
-    }).catch(() => {});
-  }, []);
   const router = useRouter();
 
   useEffect(() => {
@@ -48,8 +43,33 @@ export default function Header() {
     };
     fetchCart();
     const interval = setInterval(fetchCart, 10000);
-    return () => clearInterval(interval);
+
+    const handleCartUpdate = () => fetchCart();
+    window.addEventListener("cart-updated", handleCartUpdate);
+
+    return () => { clearInterval(interval); window.removeEventListener("cart-updated", handleCartUpdate); };
   }, []);
+
+  useEffect(() => {
+    const adminToken = localStorage.getItem("admin_token");
+    const userToken = localStorage.getItem("userToken");
+    if (adminToken) {
+      setUserLabel("Админ");
+    } else if (userToken) {
+      fetch("/api/user/profile", { headers: { Authorization: `Bearer ${userToken}` } })
+        .then((r) => r.ok ? r.json() : null)
+        .then((data) => { if (data?.email) setUserLabel(data.email); })
+        .catch(() => {});
+    }
+  }, []);
+
+  useEffect(() => {
+    if (cartCount > prevCartCount.current && prevCartCount.current >= 0) {
+      setCartSwing(true);
+      setTimeout(() => setCartSwing(false), 800);
+    }
+    prevCartCount.current = cartCount;
+  }, [cartCount]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -116,7 +136,7 @@ export default function Header() {
             <span className="hidden sm:inline">СБ-ВС: Выходной</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
-            <span>Ваш регион</span>
+            <span>Москва и МО</span>
           </div>
         </div>
       </div>
@@ -126,11 +146,11 @@ export default function Header() {
         <div className="flex items-center justify-between gap-2 sm:gap-4">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <Image src={logoUrl} alt={siteName} width={40} height={40} className="w-8 h-8 sm:w-10 sm:h-10" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Image src="/logo.png" alt="ТОПХИТ" width={56} height={56} className="w-10 h-10 sm:w-14 sm:h-14 drop-shadow-md" />
               <div>
-                <h1 className="text-lg sm:text-xl font-bold text-primary leading-tight font-heading">{siteName}</h1>
-                <p className="text-[10px] sm:text-xs text-text-gray leading-tight">интернет-магазин</p>
+                <h1 className="text-xl sm:text-2xl font-extrabold text-primary leading-tight font-heading tracking-tight">ТОПХИТ</h1>
+                <p className="text-[10px] sm:text-xs text-text-gray leading-tight tracking-wide">интернет-магазин</p>
               </div>
             </div>
           </Link>
@@ -190,22 +210,27 @@ export default function Header() {
 
           {/* Action icons */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <Link href="/wishlist" className="hidden sm:flex flex-col items-center text-text-gray hover:text-danger transition-colors">
+            <Link href="/wishlist" className="hidden sm:flex flex-col items-center text-text-gray hover:text-danger transition-colors relative overflow-hidden rounded-lg px-2 py-1">
+              <Ripple />
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
               <span className="text-[10px] sm:text-xs mt-0.5">Избранное</span>
             </Link>
-            <Link href="/compare" className="hidden sm:flex flex-col items-center text-text-gray hover:text-primary transition-colors">
+            <Link href="/compare" className="hidden sm:flex flex-col items-center text-text-gray hover:text-primary transition-colors relative overflow-hidden rounded-lg px-2 py-1">
+              <Ripple />
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
               <span className="text-[10px] sm:text-xs mt-0.5">Сравнение</span>
             </Link>
-            <Link href="/cart" className="flex flex-col items-center text-text-gray hover:text-primary transition-colors relative">
-              <div className="relative">
+            <Link href="/cart" id="cart-icon" className="flex flex-col items-center text-text-gray hover:text-primary transition-colors relative">
+              <div className={`relative ${cartSwing ? "animate-cart-swing" : ""}`}>
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={cartCount > 0
+                    ? "M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"
+                    : "M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  } />
                 </svg>
                 {cartCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-danger text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center animate-count-pulse">
@@ -215,11 +240,12 @@ export default function Header() {
               </div>
               <span className="text-[10px] sm:text-xs mt-0.5">Корзина</span>
             </Link>
-            <Link href="/account" className="flex flex-col items-center text-text-gray hover:text-primary transition-colors">
+            <Link href="/account" className="flex flex-col items-center text-text-gray hover:text-primary transition-colors relative overflow-hidden rounded-lg px-2 py-1">
+              <Ripple />
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              <span className="text-[10px] sm:text-xs mt-0.5">Вход</span>
+              <span className="text-[10px] sm:text-xs mt-0.5 max-w-[80px] truncate">{userLabel || "Вход"}</span>
             </Link>
 
             {/* Mobile menu toggle */}
@@ -286,7 +312,7 @@ export default function Header() {
               <Link href="/wishlist" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg transition-colors" onClick={() => setMenuOpen(false)}>Избранное</Link>
               <Link href="/compare" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg transition-colors" onClick={() => setMenuOpen(false)}>Сравнение</Link>
               <Link href="/cart" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg transition-colors" onClick={() => setMenuOpen(false)}>Корзина</Link>
-              <Link href="/account" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg transition-colors" onClick={() => setMenuOpen(false)}>Вход / Кабинет</Link>
+              <Link href="/account" className="text-text-dark hover:text-primary hover:bg-bg-light py-2.5 px-3 rounded-lg transition-colors" onClick={() => setMenuOpen(false)}>{userLabel || "Вход / Кабинет"}</Link>
               <div className="border-t border-border my-2" />
             </nav>
           </div>

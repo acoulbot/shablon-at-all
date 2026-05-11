@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import jwt from "jsonwebtoken";
 
-const SECRET = process.env.JWT_SECRET || "change-me-secret-key";
+const SECRET = process.env.JWT_SECRET || "tophit-secret-key-2024";
 
 function getUserId(req: NextRequest): string | null {
   const auth = req.headers.get("authorization");

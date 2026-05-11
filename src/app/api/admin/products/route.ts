@@ -23,16 +23,20 @@ export async function POST(request: Request) {
   if (!checkAdmin(request)) return Response.json({ error: "Нет доступа" }, { status: 401 });
 
   const body = await request.json();
-  const { name, description, price, oldPrice, image, inStock, packSize, expirationDate, brand, color, productType, categoryId, isFeatured } = body;
+  const { name, description, price, oldPrice, image, inStock, packSize, expirationDate, brand, color, productType, categoryId, isFeatured, tags } = body;
 
   if (!name || !price || !categoryId) {
     return Response.json({ error: "Название, цена и категория обязательны" }, { status: 400 });
   }
 
   let slug = slugify(name);
-  const existing = await prisma.product.findFirst({ where: { slug } });
+  let existing = await prisma.product.findFirst({ where: { slug } });
   if (existing) {
-    slug = slug + "-" + Math.random().toString(36).slice(2, 6);
+    let counter = 2;
+    while (await prisma.product.findFirst({ where: { slug: `${slug}-${counter}` } })) {
+      counter++;
+    }
+    slug = `${slug}-${counter}`;
   }
   const product = await prisma.product.create({
     data: {
@@ -41,6 +45,7 @@ export async function POST(request: Request) {
       inStock: Number(inStock) || 0, packSize: packSize ? Number(packSize) : null,
       expirationDate: expirationDate || "", brand: brand || "", color: color || "",
       productType: productType || "", categoryId, isFeatured: !!isFeatured,
+      tags: tags || "",
     },
   });
   return Response.json(product, { status: 201 });
@@ -51,6 +56,14 @@ export async function PUT(request: Request) {
 
   const body = await request.json();
 
+  // Bulk stock update for all products
+  if (body.bulkStock !== undefined) {
+    const result = await prisma.product.updateMany({
+      data: { inStock: Number(body.bulkStock) },
+    });
+    return Response.json({ success: true, updated: result.count });
+  }
+
   // Bulk category assignment
   if (body.ids && body.categoryId) {
     const result = await prisma.product.updateMany({
@@ -60,7 +73,7 @@ export async function PUT(request: Request) {
     return Response.json({ success: true, updated: result.count });
   }
 
-  const { id, name, description, price, oldPrice, image, image2, image3, image4, inStock, packSize, expirationDate, brand, color, productType, categoryId, isFeatured } = body;
+  const { id, name, description, price, oldPrice, image, image2, image3, image4, inStock, packSize, expirationDate, brand, color, productType, categoryId, isFeatured, tags } = body;
 
   if (!id || !name || !price || !categoryId) {
     return Response.json({ error: "Обязательные поля не заполнены" }, { status: 400 });
@@ -75,6 +88,7 @@ export async function PUT(request: Request) {
       inStock: Number(inStock) || 0, packSize: packSize ? Number(packSize) : null,
       expirationDate: expirationDate || "", brand: brand || "", color: color || "",
       productType: productType || "", categoryId, isFeatured: !!isFeatured,
+      tags: tags || "",
     },
   });
   return Response.json(product);

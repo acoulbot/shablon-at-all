@@ -1,5 +1,4 @@
 import { ImageResponse } from "next/og";
-import { getSettings } from "@/lib/settings";
 
 export const size = {
   width: 1200,
@@ -8,9 +7,7 @@ export const size = {
 
 export const contentType = "image/png";
 
-export default async function OGImage() {
-  const s = await getSettings();
-
+export default function OGImage() {
   return new ImageResponse(
     (
       <div
@@ -37,7 +34,7 @@ export default async function OGImage() {
             style={{
               width: "80px",
               height: "80px",
-              background: s.colorPrimary || "#e94560",
+              background: "#e94560",
               borderRadius: "20px",
               display: "flex",
               alignItems: "center",
@@ -47,7 +44,7 @@ export default async function OGImage() {
               fontWeight: 800,
             }}
           >
-            {s.siteName.substring(0, 2).toUpperCase()}
+            TH
           </div>
           <div
             style={{
@@ -57,7 +54,7 @@ export default async function OGImage() {
               letterSpacing: "-2px",
             }}
           >
-            {s.siteName}
+            ТОПХИТ
           </div>
         </div>
         <div
@@ -69,7 +66,16 @@ export default async function OGImage() {
             lineHeight: 1.4,
           }}
         >
-          {s.siteDescription}
+          Интернет-магазин товаров оптом и в розницу
+        </div>
+        <div
+          style={{
+            fontSize: "20px",
+            color: "rgba(255,255,255,0.5)",
+            marginTop: "16px",
+          }}
+        >
+          tophitt.ru
         </div>
       </div>
     ),
