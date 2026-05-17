@@ -3,9 +3,9 @@ import Footer from "@/components/Footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Политика обработки персональных данных — VapeLabHIT",
-  description: "Политика обработки персональных данных ООО/ИП VapeLabHIT. Порядок сбора, хранения и защиты персональных данных пользователей сайта vapelabhit.ru",
-  alternates: { canonical: "https://vapelabhit.ru/privacy" },
+  title: "Политика обработки персональных данных — CloudStuff",
+  description: "Политика обработки персональных данных ООО/ИП CloudStuff. Порядок сбора, хранения и защиты персональных данных пользователей сайта cloudstuff.ru",
+  alternates: { canonical: "https://cloudstuff.ru/privacy" },
 };
 
 export default function PrivacyPage() {
@@ -20,8 +20,8 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-base font-bold text-text-dark mb-2">1. Общие положения</h2>
               <p>1.1. Настоящая Политика оператора в отношении обработки персональных данных (далее — Политика) разработана в соответствии с требованиями Федерального закона от 27.07.2006 № 152-ФЗ «О персональных данных».</p>
-              <p className="mt-2">1.2. Оператор: Компания VapeLabHIT (далее — Оператор).</p>
-              <p className="mt-2">1.3. Сайт Оператора: vapelabhit.ru (далее — Сайт).</p>
+              <p className="mt-2">1.2. Оператор: Компания CloudStuff (далее — Оператор).</p>
+              <p className="mt-2">1.3. Сайт Оператора: cloudstuff.ru (далее — Сайт).</p>
               <p className="mt-2">1.4. Настоящая Политика определяет порядок обработки персональных данных и меры по обеспечению безопасности персональных данных Пользователей Сайта.</p>
             </section>
 
@@ -91,7 +91,7 @@ export default function PrivacyPage() {
               <ul className="list-disc ml-5 space-y-1 mt-2">
                 <li>Получать информацию, касающуюся обработки его данных;</li>
                 <li>Требовать уточнения, блокирования или уничтожения данных в случае их неполноты или неточности;</li>
-                <li>Отозвать согласие на обработку персональных данных, направив электронное письмо на официальный адрес Оператора: <a href="mailto:info@vapelabhit.ru" className="text-primary hover:underline">info@vapelabhit.ru</a>.</li>
+                <li>Отозвать согласие на обработку персональных данных, направив электронное письмо на официальный адрес Оператора: <a href="mailto:info@cloudstuff.ru" className="text-primary hover:underline">info@cloudstuff.ru</a>.</li>
               </ul>
             </section>
 
@@ -105,7 +105,7 @@ export default function PrivacyPage() {
               <h2 className="text-base font-bold text-text-dark mb-2">Контактная информация</h2>
               <p>По вопросам обработки персональных данных обращайтесь:</p>
               <p className="mt-2">Телефон: <a href="tel:+79362568950" className="text-primary hover:underline">+7 (936) 256-89-50</a></p>
-              <p>Email: <a href="mailto:info@vapelabhit.ru" className="text-primary hover:underline">info@vapelabhit.ru</a></p>
+              <p>Email: <a href="mailto:info@cloudstuff.ru" className="text-primary hover:underline">info@cloudstuff.ru</a></p>
             </section>
           </div>
         </div>

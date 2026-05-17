@@ -117,7 +117,7 @@ export function getCategoryUrl(
   category: { slug: string; parent?: { slug: string } | null },
 ): string {
   if (category.parent) {
-    return `https://vapelabhit.ru/catalog/${category.parent.slug}/${category.slug}`;
+    return `https://cloudstuff.ru/catalog/${category.parent.slug}/${category.slug}`;
   }
-  return `https://vapelabhit.ru/catalog/${category.slug}`;
+  return `https://cloudstuff.ru/catalog/${category.slug}`;
 }

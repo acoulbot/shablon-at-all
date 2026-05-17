@@ -321,8 +321,8 @@ export default function AccountPage() {
             {/* Logo */}
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-3 mb-2">
-                <Image src="/logo.jpg" alt="VapeLabHIT" width={56} height={56} className="w-14 h-14 drop-shadow-md" />
-                <span className="text-primary text-3xl font-extrabold font-heading tracking-tight">VapeLabHIT</span>
+                <Image src="/logo.svg" alt="CloudStuff" width={56} height={56} className="w-14 h-14 drop-shadow-md" />
+                <span className="text-primary text-3xl font-extrabold font-heading tracking-tight">CloudStuff</span>
               </div>
               <p className="text-text-gray text-sm">
                 {resetMode ? "Восстановление доступа к аккаунту" : "Войдите для управления заказами и избранным"}

@@ -15,11 +15,11 @@ import { SkeletonProductGrid } from "@/components/Skeleton";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Каталог вейп-продукции — VapeLabHIT | Испарители, картриджи, аккумуляторы",
-  description: "Каталог VapeLabHIT — испарители, картриджи, аккумуляторы, зарядные устройства, Powerbank Walker, вата. Доставка по России.",
-  alternates: { canonical: "https://vapelabhit.ru/catalog" },
+  title: "Каталог вейп-продукции — CloudStuff | Испарители, картриджи, аккумуляторы",
+  description: "Каталог CloudStuff — испарители, картриджи, аккумуляторы, зарядные устройства, Powerbank Walker, вата. Доставка по России.",
+  alternates: { canonical: "https://cloudstuff.ru/catalog" },
   openGraph: {
-    title: "Каталог вейп-продукции — VapeLabHIT",
+    title: "Каталог вейп-продукции — CloudStuff",
     description: "Испарители, картриджи, аккумуляторы и аксессуары для вейпа с доставкой по России",
     locale: "ru_RU",
     type: "website",
@@ -229,7 +229,7 @@ export default async function CatalogPage({ searchParams }: PageProps) {
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
           <Breadcrumbs items={[{ label: "Каталог" }]} />
 
-          <h1 className="text-xl sm:text-2xl font-bold text-text-dark mb-1 sm:mb-2">Каталог вейп-продукции VapeLabHIT</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-text-dark mb-1 sm:mb-2">Каталог вейп-продукции CloudStuff</h1>
           <p className="text-text-gray text-sm mb-4 sm:mb-6">Испарители, картриджи, аккумуляторы и аксессуары — доставка по России</p>
 
           <Suspense fallback={<SkeletonProductGrid count={8} />}>

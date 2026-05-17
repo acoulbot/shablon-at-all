@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Оформление заказа — VapeLabHIT",
-  description: "Оформите заказ в интернет-магазине VapeLabHIT. Доставка по Москве и МО или самовывоз со склада.",
+  title: "Оформление заказа — CloudStuff",
+  description: "Оформите заказ в интернет-магазине CloudStuff. Доставка по Москве и МО или самовывоз со склада.",
   robots: { index: false, follow: true },
   alternates: { canonical: null },
 };

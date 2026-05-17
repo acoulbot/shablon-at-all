@@ -83,7 +83,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={resolveImageUrl(slide.imageUrl)}
-                alt={slide.title ? `${slide.title} — VapeLabHIT` : `Баннер ${index + 1} — вейп-продукция VapeLabHIT`}
+                alt={slide.title ? `${slide.title} — CloudStuff` : `Баннер ${index + 1} — вейп-продукция CloudStuff`}
                 className="absolute inset-0 w-full h-full object-cover"
                 fetchPriority={index === 0 ? "high" : undefined}
                 loading={index === 0 ? "eager" : "lazy"}

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Личный кабинет — VapeLabHIT",
-  description: "Личный кабинет покупателя VapeLabHIT. Управляйте заказами, профилем и адресами доставки.",
+  title: "Личный кабинет — CloudStuff",
+  description: "Личный кабинет покупателя CloudStuff. Управляйте заказами, профилем и адресами доставки.",
   robots: { index: false, follow: true },
   alternates: { canonical: null },
 };

@@ -10,16 +10,16 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Новости — VapeLabHIT",
-  description: "Новости VapeLabHIT: новые поставки, акции, специальные предложения для оптовых и розничных покупателей. Статьи о товарах и обновления ассортимента.",
+  title: "Новости — CloudStuff",
+  description: "Новости CloudStuff: новые поставки, акции, специальные предложения для оптовых и розничных покупателей. Статьи о товарах и обновления ассортимента.",
   openGraph: {
-    title: "Новости — VapeLabHIT",
-    description: "Новости и обновления магазина VapeLabHIT",
+    title: "Новости — CloudStuff",
+    description: "Новости и обновления магазина CloudStuff",
     locale: "ru_RU",
     type: "website",
-    url: "https://vapelabhit.ru/news",
+    url: "https://cloudstuff.ru/news",
   },
-  alternates: { canonical: "https://vapelabhit.ru/news" },
+  alternates: { canonical: "https://cloudstuff.ru/news" },
 };
 
 export default async function NewsPage(props: { searchParams: Promise<{ type?: string }> }) {

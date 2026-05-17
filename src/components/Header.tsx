@@ -136,7 +136,7 @@ export default function Header() {
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
             <span className="hidden sm:inline">Доставка по всей России</span>
-            <span>VapeLabHIT</span>
+            <span>CloudStuff</span>
           </div>
         </div>
       </div>
@@ -147,10 +147,10 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <div className="flex items-center gap-2 sm:gap-3">
-              <Image src="/logo.jpg" alt="VapeLabHIT" width={56} height={56} className="w-10 h-10 sm:w-14 sm:h-14 drop-shadow-md rounded-lg" />
+              <Image src="/logo.svg" alt="CloudStuff" width={56} height={56} className="w-10 h-10 sm:w-14 sm:h-14 drop-shadow-md rounded-lg" />
               <div>
-                <h1 className="text-xl sm:text-2xl font-extrabold leading-tight font-heading tracking-tight gradient-text">VapeLabHIT</h1>
-                <p className="text-[10px] sm:text-xs text-text-gray leading-tight tracking-wide">vape-магазин</p>
+                <h1 className="text-xl sm:text-2xl font-extrabold leading-tight font-heading tracking-tight gradient-text">CloudStuff</h1>
+                <p className="text-[10px] sm:text-xs text-text-gray leading-tight tracking-wide">аксессуары для устройств</p>
               </div>
             </div>
           </Link>
@@ -317,11 +317,11 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-6 py-2 text-sm font-medium">
             <Link href="/catalog" className="text-text-dark hover:text-primary transition-colors">Каталог</Link>
-            <Link href="/catalog/ispariteli" className="text-text-gray hover:text-primary transition-colors">Испарители</Link>
-            <Link href="/catalog/kartridzhi" className="text-text-gray hover:text-primary transition-colors">Картриджи</Link>
-            <Link href="/catalog/akkumulyatory-i-batarejki" className="text-text-gray hover:text-primary transition-colors">Аккумуляторы</Link>
+            <Link href="/catalog/chekhly-i-kejsy" className="text-text-gray hover:text-primary transition-colors">Чехлы и кейсы</Link>
             <Link href="/catalog/zaryadnye-ustrojstva" className="text-text-gray hover:text-primary transition-colors">Зарядки</Link>
-            <Link href="/catalog/powerbank-walker" className="text-text-gray hover:text-primary transition-colors">Powerbank</Link>
+            <Link href="/catalog/kabeli-i-shnury" className="text-text-gray hover:text-primary transition-colors">Кабели</Link>
+            <Link href="/catalog/powerbank" className="text-text-gray hover:text-primary transition-colors">Powerbank</Link>
+            <Link href="/catalog/vejp-aksessuary" className="text-text-gray hover:text-primary transition-colors">Вейп</Link>
             <Link href="/wholesale" className="text-text-gray hover:text-primary transition-colors">Опт</Link>
             <Link href="/about" className="text-text-gray hover:text-primary transition-colors">О нас</Link>
           </div>

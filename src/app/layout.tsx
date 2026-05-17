@@ -18,21 +18,21 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://vapelabhit.ru"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://cloudstuff.ru"),
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
     yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION || "",
   },
-  title: "VapeLabHIT — Испарители, картриджи, аккумуляторы и аксессуары для вейпа",
-  description: "Интернет-магазин VapeLabHIT — испарители, картриджи для вейпа, аккумуляторы, зарядные устройства, powerbank Walker, шнуры и вата. Доставка по России.",
-  keywords: "вейп, испарители, картриджи, аккумуляторы, батарейки, зарядные устройства, powerbank Walker, вата, VapeLabHIT, вейп-шоп",
+  title: "CloudStuff — Аксессуары для электронных устройств и вейпов",
+  description: "Интернет-магазин CloudStuff — чехлы, кейсы, зарядные устройства, кабели, powerbank, аксессуары для вейпов и электронных устройств. Доставка по России.",
+  keywords: "аксессуары, чехлы, кейсы, зарядные устройства, кабели, powerbank, вейп аксессуары, CloudStuff, электронные устройства",
   openGraph: {
-    title: "VapeLabHIT — Испарители, картриджи, аккумуляторы и аксессуары для вейпа",
-    description: "Испарители, картриджи для вейпа, аккумуляторы и батарейки, зарядные устройства, powerbank Walker, шнуры и вата. Доставка по России.",
+    title: "CloudStuff — Аксессуары для электронных устройств и вейпов",
+    description: "Чехлы, кейсы, зарядные устройства, кабели, powerbank и аксессуары для вейпов. Доставка по России.",
     locale: "ru_RU",
     type: "website",
-    siteName: "VapeLabHIT",
-    url: process.env.NEXT_PUBLIC_BASE_URL || "https://vapelabhit.ru",
+    siteName: "CloudStuff",
+    url: process.env.NEXT_PUBLIC_BASE_URL || "https://cloudstuff.ru",
   },
   alternates: {
     canonical: "/",
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   },
 };
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://vapelabhit.ru";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://cloudstuff.ru";
 
 export default function RootLayout({
   children,
@@ -85,9 +85,9 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              name: "VapeLabHIT",
+              name: "CloudStuff",
               url: BASE_URL,
-              logo: `${BASE_URL}/logo.jpg`,
+              logo: `${BASE_URL}/logo.svg`,
               contactPoint: {
                 "@type": "ContactPoint",
                 telephone: "+7-XXX-XXX-XX-XX",
@@ -96,7 +96,7 @@ export default function RootLayout({
                 availableLanguage: "Russian",
               },
               sameAs: [
-                "https://t.me/vapelabhit",
+                "https://t.me/cloudstuff_ru",
               ],
             }),
           }}
@@ -107,11 +107,11 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
-              name: "VapeLabHIT",
-              image: `${BASE_URL}/logo.jpg`,
+              name: "CloudStuff",
+              image: `${BASE_URL}/logo.svg`,
               url: BASE_URL,
               telephone: "+7-XXX-XXX-XX-XX",
-              email: "info@vapelabhit.ru",
+              email: "info@cloudstuff.ru",
               address: {
                 "@type": "PostalAddress",
                 addressLocality: "Москва",
