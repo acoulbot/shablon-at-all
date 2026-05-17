@@ -792,7 +792,7 @@ export default function AdminPage() {
             <div className="w-14 h-14 bg-primary rounded-xl flex items-center justify-center mx-auto mb-3">
               <span className="text-white font-bold text-2xl">Т</span>
             </div>
-            <h1 className="text-xl font-bold text-text-dark">Админ-панель VapeLabHIT</h1>
+            <h1 className="text-xl font-bold text-text-dark">Админ-панель CloudStuff</h1>
             <p className="text-sm text-text-gray mt-1">Введите данные для входа</p>
           </div>
           <form onSubmit={login} className="space-y-4">
@@ -824,7 +824,7 @@ export default function AdminPage() {
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-white font-bold">Т</span>
             </div>
-            <h1 className="text-lg font-bold text-text-dark">VapeLabHIT — Админ</h1>
+            <h1 className="text-lg font-bold text-text-dark">CloudStuff — Админ</h1>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/" className="text-sm text-primary hover:underline">На сайт</Link>

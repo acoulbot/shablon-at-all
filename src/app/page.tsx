@@ -48,11 +48,11 @@ export default async function HomePage() {
   const websiteLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "VapeLabHIT",
-    url: process.env.NEXT_PUBLIC_BASE_URL || "https://vapelabhit.ru",
+    name: "CloudStuff",
+    url: process.env.NEXT_PUBLIC_BASE_URL || "https://cloudstuff.ru",
     potentialAction: {
       "@type": "SearchAction",
-      target: `${process.env.NEXT_PUBLIC_BASE_URL || "https://vapelabhit.ru"}/catalog?search={search_term_string}`,
+      target: `${process.env.NEXT_PUBLIC_BASE_URL || "https://cloudstuff.ru"}/catalog?search={search_term_string}`,
       "query-input": "required name=search_term_string",
     },
   };
@@ -80,10 +80,10 @@ export default async function HomePage() {
               <div className="absolute bottom-10 right-10 w-24 h-24 bg-accent rounded-full blur-3xl animate-float" style={{ animationDelay: "1.5s" }} />
             </div>
             <h1 className="font-heading text-2xl sm:text-3xl md:text-4xl font-extrabold text-text-dark leading-tight mb-3 sm:mb-4 relative">
-              <span className="gradient-text">VapeLabHIT</span> — всё для вейпа<br className="hidden sm:block" /> в одном месте
+              <span className="gradient-text">CloudStuff</span> — аксессуары<br className="hidden sm:block" /> для ваших устройств
             </h1>
             <p className="text-text-gray text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-5 sm:mb-6 leading-relaxed relative">
-              Испарители, картриджи, аккумуляторы и батарейки, зарядные устройства, <strong className="text-text-dark">Powerbank Walker</strong>, шнуры, зарядки и вата. Качественная продукция с доставкой по России.
+              Чехлы, кейсы, зарядные устройства, кабели, <strong className="text-text-dark">Powerbank</strong>, аксессуары для вейпов и электронных устройств. Качество с доставкой по России.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 relative">
               <Link href="/catalog" className="bg-primary hover:bg-primary-dark text-white font-bold px-8 py-3 rounded-xl transition-all text-sm sm:text-base shadow-md hover:shadow-lg hover:shadow-primary/25 animate-glow-pulse">

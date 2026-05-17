@@ -17,9 +17,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const news = await prisma.news.findUnique({ where: { slug: decodedSlug } });
   if (!news || !news.published) return {};
 
-  const title = `${news.title} — VapeLabHIT`;
+  const title = `${news.title} — CloudStuff`;
   const description = news.excerpt || news.content.replace(/<[^>]*>/g, "").slice(0, 160).trim();
-  const url = `https://vapelabhit.ru/news/${news.slug}`;
+  const url = `https://cloudstuff.ru/news/${news.slug}`;
 
   return {
     title,
@@ -56,27 +56,27 @@ export default async function NewsDetailPage({ params }: PageProps) {
     "@type": "NewsArticle",
     headline: news.title,
     description: news.excerpt || plainText.slice(0, 200),
-    url: `https://vapelabhit.ru/news/${news.slug}`,
+    url: `https://cloudstuff.ru/news/${news.slug}`,
     datePublished: news.createdAt.toISOString(),
     dateModified: news.updatedAt.toISOString(),
     ...(news.image ? { image: [news.image] } : {}),
     author: {
       "@type": "Organization",
-      name: "VapeLabHIT",
-      url: "https://vapelabhit.ru",
+      name: "CloudStuff",
+      url: "https://cloudstuff.ru",
     },
     publisher: {
       "@type": "Organization",
-      name: "VapeLabHIT",
-      url: "https://vapelabhit.ru",
+      name: "CloudStuff",
+      url: "https://cloudstuff.ru",
       logo: {
         "@type": "ImageObject",
-        url: "https://vapelabhit.ru/logo.jpg",
+        url: "https://cloudstuff.ru/logo.svg",
       },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://vapelabhit.ru/news/${news.slug}`,
+      "@id": `https://cloudstuff.ru/news/${news.slug}`,
     },
     wordCount,
     articleSection: "Новости",
@@ -87,8 +87,8 @@ export default async function NewsDetailPage({ params }: PageProps) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Главная", item: "https://vapelabhit.ru/" },
-      { "@type": "ListItem", position: 2, name: "Новости", item: "https://vapelabhit.ru/news" },
+      { "@type": "ListItem", position: 1, name: "Главная", item: "https://cloudstuff.ru/" },
+      { "@type": "ListItem", position: 2, name: "Новости", item: "https://cloudstuff.ru/news" },
       { "@type": "ListItem", position: 3, name: news.title },
     ],
   };

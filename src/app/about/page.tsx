@@ -9,17 +9,17 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "О компании VapeLabHIT — испарители, картриджи, аккумуляторы и аксессуары для вейпа",
-  description: "VapeLabHIT — интернет-магазин вейп-продукции. Испарители, картриджи, аккумуляторы, зарядные устройства, Powerbank Walker. Доставка по России.",
+  title: "О компании CloudStuff — аксессуары для электронных устройств и вейпов",
+  description: "CloudStuff — интернет-магазин аксессуаров. Чехлы, кейсы, зарядные устройства, кабели, powerbank и вейп-аксессуары. Доставка по России.",
   openGraph: {
-    title: "О компании VapeLabHIT — вейп-магазин",
-    description: "VapeLabHIT — испарители, картриджи, аккумуляторы и аксессуары для вейпа. Качество и доставка по России.",
+    title: "О компании CloudStuff — аксессуары для устройств",
+    description: "CloudStuff — чехлы, кейсы, зарядки, кабели, powerbank и аксессуары для вейпов. Доставка по России.",
     locale: "ru_RU",
     type: "website",
-    url: "https://vapelabhit.ru/about",
+    url: "https://cloudstuff.ru/about",
   },
   alternates: {
-    canonical: "https://vapelabhit.ru/about",
+    canonical: "https://cloudstuff.ru/about",
   },
 };
 
@@ -39,10 +39,10 @@ export default async function AboutPage() {
           {/* Hero */}
           <div className="bg-bg-white rounded-xl border border-border p-4 sm:p-6 md:p-8 mb-6 sm:mb-8">
             <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-              <Image src="/logo.jpg" alt="VapeLabHIT" width={64} height={64} className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg" />
+              <Image src="/logo.svg" alt="CloudStuff" width={64} height={64} className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg" />
               <div>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-dark"><span className="gradient-text">VapeLabHIT</span> — вейп-магазин</h1>
-                <p className="text-text-gray">Испарители, картриджи, аккумуляторы и аксессуары для вейпа</p>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-dark"><span className="gradient-text">CloudStuff</span> — аксессуары для устройств</h1>
+                <p className="text-text-gray">Чехлы, кейсы, зарядки, кабели, powerbank и вейп-аксессуары</p>
               </div>
             </div>
 
@@ -51,7 +51,7 @@ export default async function AboutPage() {
             ) : (
               <div className="text-text-gray leading-relaxed space-y-4">
                 <p className="text-lg text-text-dark">
-                  VapeLabHIT — современный интернет-магазин вейп-продукции. Мы предлагаем широкий ассортимент испарителей, картриджей, аккумуляторов, зарядных устройств, powerbank Walker, шнуров и ваты — всё для комфортного вейпинга в одном месте.
+                  CloudStuff — современный интернет-магазин аксессуаров для электронных устройств и вейпов. Мы предлагаем широкий ассортимент чехлов, кейсов, зарядных устройств, кабелей, powerbank, защитных стёкол и вейп-аксессуаров — всё для ваших устройств в одном месте.
                 </p>
                 <p>
                   Мы работаем только с проверенными брендами и поставщиками, гарантируя оригинальность каждого товара. Наша цель — предоставить клиенту удобный сервис с быстрой доставкой, честными ценами и профессиональной поддержкой. Мы постоянно расширяем ассортимент и предлагаем индивидуальные условия для оптовых покупателей.
@@ -67,7 +67,7 @@ export default async function AboutPage() {
                 <span className="text-2xl">&#127919;</span>
               </div>
               <h3 className="font-bold text-text-dark mb-2">Наша цель</h3>
-              <p className="text-sm text-text-gray">Стать ведущей площадкой вейп-продукции с лучшим ассортиментом и сервисом по честным ценам.</p>
+              <p className="text-sm text-text-gray">Стать ведущей площадкой аксессуаров для электроники с лучшим ассортиментом и сервисом по честным ценам.</p>
             </div>
             <div className="bg-bg-white rounded-xl border border-border p-6">
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
@@ -93,7 +93,7 @@ export default async function AboutPage() {
             ) : (
               <div className="text-text-gray leading-relaxed space-y-4">
                 <p>
-                  Наш ассортимент охватывает все ключевые категории вейп-индустрии — от одноразовых испарителей и pod-систем до аккумуляторов, зарядных устройств и расходных материалов. Мы постоянно расширяем линейку и следим за новинками рынка.
+                  Наш ассортимент охватывает все ключевые категории электронных аксессуаров — от чехлов и защитных стёкол до зарядных устройств, кабелей и powerbank. Мы постоянно расширяем линейку и следим за новинками рынка.
                 </p>
                 <p>
                   Продажи ведутся через онлайн-платформу с удобной системой доставок/самовывозов и возможностью оптового сотрудничества.
@@ -236,7 +236,7 @@ export default async function AboutPage() {
                       <p className="text-sm text-primary font-bold">Свяжитесь с нами</p>
                     </div>
                   </a>
-                  <a href="mailto:info@vapelabhit.ru"
+                  <a href="mailto:info@cloudstuff.ru"
                     className="flex items-start gap-3 bg-bg-white rounded-xl border border-border p-4 hover:border-primary/30 hover:shadow-md transition-all">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -245,10 +245,10 @@ export default async function AboutPage() {
                     </div>
                     <div>
                       <p className="text-xs text-text-gray mb-0.5">Розничные заказы</p>
-                      <p className="text-sm text-primary font-medium">info@vapelabhit.ru</p>
+                      <p className="text-sm text-primary font-medium">info@cloudstuff.ru</p>
                     </div>
                   </a>
-                  <a href="mailto:opt@vapelabhit.ru"
+                  <a href="mailto:opt@cloudstuff.ru"
                     className="flex items-start gap-3 bg-bg-white rounded-xl border border-border p-4 hover:border-primary/30 hover:shadow-md transition-all">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -257,10 +257,10 @@ export default async function AboutPage() {
                     </div>
                     <div>
                       <p className="text-xs text-text-gray mb-0.5">Оптовые заказы</p>
-                      <p className="text-sm text-primary font-medium">opt@vapelabhit.ru</p>
+                      <p className="text-sm text-primary font-medium">opt@cloudstuff.ru</p>
                     </div>
                   </a>
-                  <a href="mailto:partners@vapelabhit.ru"
+                  <a href="mailto:partners@cloudstuff.ru"
                     className="flex items-start gap-3 bg-bg-white rounded-xl border border-border p-4 hover:border-primary/30 hover:shadow-md transition-all sm:col-span-2">
                     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -269,7 +269,7 @@ export default async function AboutPage() {
                     </div>
                     <div>
                       <p className="text-xs text-text-gray mb-0.5">Для поставщиков</p>
-                      <p className="text-sm text-primary font-medium">partners@vapelabhit.ru</p>
+                      <p className="text-sm text-primary font-medium">partners@cloudstuff.ru</p>
                     </div>
                   </a>
                 </div>
@@ -290,10 +290,10 @@ export default async function AboutPage() {
               mainEntity: [
                 {
                   "@type": "Question",
-                  name: "Какие товары продаёт VapeLabHIT?",
+                  name: "Какие товары продаёт CloudStuff?",
                   acceptedAnswer: {
                     "@type": "Answer",
-                    text: "VapeLabHIT предлагает испарители, картриджи для вейпа, аккумуляторы и батарейки, зарядные устройства, Powerbank Walker, шнуры, зарядки и вату.",
+                    text: "CloudStuff предлагает чехлы, кейсы, зарядные устройства, кабели, powerbank, защитные стёкла, держатели и вейп-аксессуары.",
                   },
                 },
                 {
@@ -301,7 +301,7 @@ export default async function AboutPage() {
                   name: "Есть ли оптовые продажи?",
                   acceptedAnswer: {
                     "@type": "Answer",
-                    text: "Да, VapeLabHIT работает как с розничными, так и с оптовыми клиентами. Оптовые заказы предполагают скидки от 5% до 20% в зависимости от объёма. Заявки принимаются на opt@vapelabhit.ru.",
+                    text: "Да, CloudStuff работает как с розничными, так и с оптовыми клиентами. Оптовые заказы предполагают скидки от 5% до 20% в зависимости от объёма. Заявки принимаются на opt@cloudstuff.ru.",
                   },
                 },
                 {

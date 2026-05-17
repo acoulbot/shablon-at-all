@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Страница не найдена — VapeLabHIT",
+  title: "Страница не найдена — CloudStuff",
   robots: { index: false, follow: true },
   alternates: { canonical: null },
 };
