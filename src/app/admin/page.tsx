@@ -1134,9 +1134,9 @@ export default function AdminPage() {
                       Авто
                     </button>
                   </div>
-                  <select value={prodForm.categoryId} onChange={(e) => setProdForm({ ...prodForm, categoryId: e.target.value })} required
+                  <select value={prodForm.categoryId} onChange={(e) => setProdForm({ ...prodForm, categoryId: e.target.value })}
                     className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary">
-                    <option value="">Выберите категорию *</option>
+                    <option value="">Категория (авто)</option>
                     {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.parentId ? `  └ ${cat.name}` : cat.name}</option>)}
                   </select>
                 </div>

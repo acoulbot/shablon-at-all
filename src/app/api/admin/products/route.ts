@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { verifyToken, getTokenFromRequest } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
+import { autoCategorize } from "@/lib/auto-categorize";
 
 function checkAdmin(request: Request): boolean {
   const token = getTokenFromRequest(request);
@@ -25,12 +26,36 @@ export async function POST(request: Request) {
   const body = await request.json();
   const { name, description, price, oldPrice, image, inStock, packSize, expirationDate, brand, color, productType, categoryId, isFeatured, tags } = body;
 
-  if (!name || !price || !categoryId) {
-    return Response.json({ error: "Название, цена и категория обязательны" }, { status: 400 });
+  if (!name || !price) {
+    return Response.json({ error: "Название и цена обязательны" }, { status: 400 });
+  }
+
+  // Auto-detect brand and category if not provided
+  const suggestion = autoCategorize(name);
+  const finalBrand = brand || suggestion.brand || "";
+  let finalCategoryId = categoryId;
+
+  if (!finalCategoryId && suggestion.category) {
+    const cat = await prisma.category.findFirst({ where: { name: suggestion.category } });
+    if (cat) {
+      finalCategoryId = cat.id;
+    } else {
+      const catSlug = slugify(suggestion.category);
+      const allCats = await prisma.category.findMany();
+      const maxOrder = allCats.reduce((max, c) => Math.max(max, c.order), 0);
+      const newCat = await prisma.category.create({ data: { name: suggestion.category, slug: catSlug, order: maxOrder + 1 } });
+      finalCategoryId = newCat.id;
+    }
+  }
+
+  if (!finalCategoryId) {
+    const defaultCat = await prisma.category.findFirst({ orderBy: { order: "asc" } });
+    if (!defaultCat) return Response.json({ error: "Нет категорий в базе" }, { status: 400 });
+    finalCategoryId = defaultCat.id;
   }
 
   let slug = slugify(name);
-  let existing = await prisma.product.findFirst({ where: { slug } });
+  const existing = await prisma.product.findFirst({ where: { slug } });
   if (existing) {
     let counter = 2;
     while (await prisma.product.findFirst({ where: { slug: `${slug}-${counter}` } })) {
@@ -43,8 +68,8 @@ export async function POST(request: Request) {
       name, slug, description: description || "", price: Number(price),
       oldPrice: oldPrice ? Number(oldPrice) : null, image: image || "",
       inStock: Number(inStock) || 0, packSize: packSize ? Number(packSize) : null,
-      expirationDate: expirationDate || "", brand: brand || "", color: color || "",
-      productType: productType || "", categoryId, isFeatured: !!isFeatured,
+      expirationDate: expirationDate || "", brand: finalBrand, color: color || "",
+      productType: productType || "", categoryId: finalCategoryId, isFeatured: !!isFeatured,
       tags: tags || "",
     },
   });
@@ -75,8 +100,32 @@ export async function PUT(request: Request) {
 
   const { id, name, description, price, oldPrice, image, image2, image3, image4, inStock, packSize, expirationDate, brand, color, productType, categoryId, isFeatured, tags } = body;
 
-  if (!id || !name || !price || !categoryId) {
+  if (!id || !name || !price) {
     return Response.json({ error: "Обязательные поля не заполнены" }, { status: 400 });
+  }
+
+  // Auto-detect brand and category if not provided
+  const suggestion = autoCategorize(name);
+  const finalBrand = brand || suggestion.brand || "";
+  let finalCategoryId = categoryId;
+
+  if (!finalCategoryId && suggestion.category) {
+    const cat = await prisma.category.findFirst({ where: { name: suggestion.category } });
+    if (cat) {
+      finalCategoryId = cat.id;
+    } else {
+      const catSlug = slugify(suggestion.category);
+      const allCats = await prisma.category.findMany();
+      const maxOrder = allCats.reduce((max, c) => Math.max(max, c.order), 0);
+      const newCat = await prisma.category.create({ data: { name: suggestion.category, slug: catSlug, order: maxOrder + 1 } });
+      finalCategoryId = newCat.id;
+    }
+  }
+
+  if (!finalCategoryId) {
+    const defaultCat = await prisma.category.findFirst({ orderBy: { order: "asc" } });
+    if (!defaultCat) return Response.json({ error: "Нет категорий в базе" }, { status: 400 });
+    finalCategoryId = defaultCat.id;
   }
 
   const product = await prisma.product.update({
@@ -86,8 +135,8 @@ export async function PUT(request: Request) {
       oldPrice: oldPrice ? Number(oldPrice) : null, image: image || "",
       image2: image2 || "", image3: image3 || "", image4: image4 || "",
       inStock: Number(inStock) || 0, packSize: packSize ? Number(packSize) : null,
-      expirationDate: expirationDate || "", brand: brand || "", color: color || "",
-      productType: productType || "", categoryId, isFeatured: !!isFeatured,
+      expirationDate: expirationDate || "", brand: finalBrand, color: color || "",
+      productType: productType || "", categoryId: finalCategoryId, isFeatured: !!isFeatured,
       tags: tags || "",
     },
   });
