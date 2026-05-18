@@ -178,10 +178,8 @@ async function CatalogContent({ searchParams }: { searchParams: Record<string, s
                 id={product.id}
                 name={product.name}
                 slug={product.slug}
-                price={product.price}
-                oldPrice={product.oldPrice}
+                description={product.description}
                 image={product.image}
-                inStock={product.inStock}
                 categorySlug={product.category.slug}
               />
             ))}

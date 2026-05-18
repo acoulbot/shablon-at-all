@@ -57,11 +57,6 @@ export default async function HomePage() {
     },
   };
 
-  function getAvgRating(revs: { rating: number }[]) {
-    if (revs.length === 0) return 0;
-    return Math.round(revs.reduce((s, r) => s + r.rating, 0) / revs.length);
-  }
-
   return (
     <>
       <Header />
@@ -148,13 +143,9 @@ export default async function HomePage() {
                       id={product.id}
                       name={product.name}
                       slug={product.slug}
-                      price={product.price}
-                      oldPrice={product.oldPrice}
+                      description={product.description}
                       image={product.image}
-                      inStock={product.inStock}
                       categorySlug={product.category.slug}
-                      rating={getAvgRating(product.reviews)}
-                      reviewCount={product.reviews.length}
                     />
                   ))}
                 </div>
@@ -177,14 +168,9 @@ export default async function HomePage() {
                   id={product.id}
                   name={product.name}
                   slug={product.slug}
-                  price={product.price}
-                  oldPrice={product.oldPrice}
+                  description={product.description}
                   image={product.image}
-                  inStock={product.inStock}
                   categorySlug={product.category.slug}
-                  rating={getAvgRating(product.reviews)}
-                  reviewCount={product.reviews.length}
-                  isFeatured={product.isFeatured}
                 />
               ))}
             </div>
@@ -209,14 +195,9 @@ export default async function HomePage() {
                     id={product.id}
                     name={product.name}
                     slug={product.slug}
-                    price={product.price}
-                    oldPrice={product.oldPrice}
+                    description={product.description}
                     image={product.image}
-                    inStock={product.inStock}
                     categorySlug={product.category.slug}
-                    rating={getAvgRating(product.reviews)}
-                    reviewCount={product.reviews.length}
-                    isNew
                   />
                 ))}
               </div>

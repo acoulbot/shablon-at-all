@@ -11,7 +11,7 @@ export async function sendVerificationCode(email: string, code: string) {
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 32px; background: #f8fafc; border-radius: 12px;">
         <div style="text-align: center; margin-bottom: 24px;">
-          <h1 style="color: #2196F3; font-size: 24px; margin: 0;">CloudStuff</h1>
+          <h1 style="color: #7BA3B8; font-size: 24px; margin: 0;">CloudStuff</h1>
           <p style="color: #64748b; font-size: 14px; margin-top: 4px;">Интернет-магазин</p>
         </div>
         <div style="background: white; border-radius: 8px; padding: 24px; text-align: center;">

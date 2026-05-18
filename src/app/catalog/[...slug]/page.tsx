@@ -213,10 +213,8 @@ async function CategoryContent({
                   id={product.id}
                   name={product.name}
                   slug={product.slug}
-                  price={product.price}
-                  oldPrice={product.oldPrice}
+                  description={product.description}
                   image={product.image}
-                  inStock={product.inStock}
                   categorySlug={product.category.slug}
                 />
               ))}
