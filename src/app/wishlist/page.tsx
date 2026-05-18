@@ -10,6 +10,7 @@ interface WishlistProduct {
   id: string;
   name: string;
   slug: string;
+  description?: string;
   price: number;
   oldPrice: number | null;
   image: string;
@@ -76,10 +77,8 @@ export default function WishlistPage() {
                   id={item.product.id}
                   name={item.product.name}
                   slug={item.product.slug}
-                  price={item.product.price}
-                  oldPrice={item.product.oldPrice}
+                  description={item.product.description}
                   image={item.product.image}
-                  inStock={item.product.inStock}
                   categorySlug={item.product.category?.slug || ""}
                 />
               ))}

@@ -261,9 +261,10 @@ export default function AdminPage() {
   const [pageSaveMsg, setPageSaveMsg] = useState("");
 
   const [prodForm, setProdForm] = useState({
-    name: "", description: "", price: "", oldPrice: "", image: "", image2: "", image3: "", image4: "",
+    name: "", description: "", price: "0", oldPrice: "", image: "", image2: "", image3: "", image4: "",
     inStock: "0", packSize: "", expirationDate: "", brand: "", color: "", productType: "", categoryId: "", isFeatured: false, tags: "",
   });
+  const [showMetaTags, setShowMetaTags] = useState(false);
   const [editingProd, setEditingProd] = useState<Product | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
   const [filterCategory, setFilterCategory] = useState("");
@@ -400,8 +401,8 @@ export default function AdminPage() {
     const method = editingProd ? "PUT" : "POST";
     const body = editingProd ? { id: editingProd.id, ...prodForm } : prodForm;
     await fetch("/api/admin/products", { method, headers: hdrs(), body: JSON.stringify(body) });
-    setProdForm({ name: "", description: "", price: "", oldPrice: "", image: "", image2: "", image3: "", image4: "", inStock: "0", packSize: "", expirationDate: "", brand: "", color: "", productType: "", categoryId: "", isFeatured: false, tags: "" });
-    setEditingProd(null); fetchData();
+    setProdForm({ name: "", description: "", price: "0", oldPrice: "", image: "", image2: "", image3: "", image4: "", inStock: "0", packSize: "", expirationDate: "", brand: "", color: "", productType: "", categoryId: "", isFeatured: false, tags: "" });
+    setEditingProd(null); setShowMetaTags(false); fetchData();
   };
 
   const deleteProduct = async (id: string) => {
@@ -1064,15 +1065,18 @@ export default function AdminPage() {
 
             <div className="bg-bg-white rounded-xl border border-border p-5">
               <h2 className="font-bold text-text-dark mb-4">{editingProd ? "Редактировать" : "Добавить"} товар</h2>
-              <form onSubmit={saveProduct} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                <input type="text" placeholder="Название *" value={prodForm.name} onChange={(e) => setProdForm({ ...prodForm, name: e.target.value })} required
-                  className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                <input type="number" placeholder="Цена *" value={prodForm.price} onChange={(e) => setProdForm({ ...prodForm, price: e.target.value })} required
-                  className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                <input type="number" placeholder="Старая цена" value={prodForm.oldPrice} onChange={(e) => setProdForm({ ...prodForm, oldPrice: e.target.value })}
-                  className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+              <form onSubmit={saveProduct} className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <input type="text" placeholder="Название *" value={prodForm.name} onChange={(e) => setProdForm({ ...prodForm, name: e.target.value })} required
+                    className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+                  <select value={prodForm.categoryId} onChange={(e) => setProdForm({ ...prodForm, categoryId: e.target.value })} required
+                    className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary">
+                    <option value="">Выберите категорию *</option>
+                    {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.parentId ? `  └ ${cat.name}` : cat.name}</option>)}
+                  </select>
+                </div>
                 <div className="border border-border rounded-lg px-3 py-2 text-sm">
-                  <label className="text-text-gray text-xs block mb-1">Изображение 1 (основное)</label>
+                  <label className="text-text-gray text-xs block mb-1">Фото товара</label>
                   <div className="flex gap-2 items-center">
                     <input type="text" placeholder="URL или загрузите файл" value={prodForm.image} onChange={(e) => setProdForm({ ...prodForm, image: e.target.value })}
                       className="flex-1 border border-border rounded px-2 py-1 text-sm focus:outline-none focus:border-primary" />
@@ -1083,84 +1087,37 @@ export default function AdminPage() {
                   </div>
                   {prodForm.image && <img src={prodForm.image} alt="" className="mt-1 w-12 h-12 object-cover rounded" />}
                 </div>
-                <div className="border border-border rounded-lg px-3 py-2 text-sm">
-                  <label className="text-text-gray text-xs block mb-1">Изображение 2</label>
-                  <div className="flex gap-2 items-center">
-                    <input type="text" placeholder="URL или загрузите файл" value={prodForm.image2} onChange={(e) => setProdForm({ ...prodForm, image2: e.target.value })}
-                      className="flex-1 border border-border rounded px-2 py-1 text-sm focus:outline-none focus:border-primary" />
-                    <label className="cursor-pointer bg-bg-light hover:bg-gray-200 text-text-gray text-xs px-2 py-1 rounded transition-colors">
-                      {uploadingImage === "image2" ? "..." : "Файл"}
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f, "image2"); e.target.value = ""; }} />
-                    </label>
-                  </div>
-                  {prodForm.image2 && <img src={prodForm.image2} alt="" className="mt-1 w-12 h-12 object-cover rounded" />}
-                </div>
-                <div className="border border-border rounded-lg px-3 py-2 text-sm">
-                  <label className="text-text-gray text-xs block mb-1">Изображение 3</label>
-                  <div className="flex gap-2 items-center">
-                    <input type="text" placeholder="URL или загрузите файл" value={prodForm.image3} onChange={(e) => setProdForm({ ...prodForm, image3: e.target.value })}
-                      className="flex-1 border border-border rounded px-2 py-1 text-sm focus:outline-none focus:border-primary" />
-                    <label className="cursor-pointer bg-bg-light hover:bg-gray-200 text-text-gray text-xs px-2 py-1 rounded transition-colors">
-                      {uploadingImage === "image3" ? "..." : "Файл"}
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f, "image3"); e.target.value = ""; }} />
-                    </label>
-                  </div>
-                  {prodForm.image3 && <img src={prodForm.image3} alt="" className="mt-1 w-12 h-12 object-cover rounded" />}
-                </div>
-                <div className="border border-border rounded-lg px-3 py-2 text-sm">
-                  <label className="text-text-gray text-xs block mb-1">Изображение 4</label>
-                  <div className="flex gap-2 items-center">
-                    <input type="text" placeholder="URL или загрузите файл" value={prodForm.image4} onChange={(e) => setProdForm({ ...prodForm, image4: e.target.value })}
-                      className="flex-1 border border-border rounded px-2 py-1 text-sm focus:outline-none focus:border-primary" />
-                    <label className="cursor-pointer bg-bg-light hover:bg-gray-200 text-text-gray text-xs px-2 py-1 rounded transition-colors">
-                      {uploadingImage === "image4" ? "..." : "Файл"}
-                      <input type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadImage(f, "image4"); e.target.value = ""; }} />
-                    </label>
-                  </div>
-                  {prodForm.image4 && <img src={prodForm.image4} alt="" className="mt-1 w-12 h-12 object-cover rounded" />}
-                </div>
-                <input type="number" placeholder="В наличии" value={prodForm.inStock} onChange={(e) => setProdForm({ ...prodForm, inStock: e.target.value })}
-                  className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                <input type="number" placeholder="Кол-во в упаковке" value={prodForm.packSize} onChange={(e) => setProdForm({ ...prodForm, packSize: e.target.value })}
-                  className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                <input type="text" placeholder="Срок годности" value={prodForm.expirationDate} onChange={(e) => setProdForm({ ...prodForm, expirationDate: e.target.value })}
-                  className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                <input type="text" placeholder="Бренд" value={prodForm.brand} onChange={(e) => setProdForm({ ...prodForm, brand: e.target.value })}
-                  className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                <input type="text" placeholder="Цвет" value={prodForm.color} onChange={(e) => setProdForm({ ...prodForm, color: e.target.value })}
-                  className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                <input type="text" placeholder="Тип товара" value={prodForm.productType} onChange={(e) => setProdForm({ ...prodForm, productType: e.target.value })}
-                  className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                <select value={prodForm.categoryId} onChange={(e) => setProdForm({ ...prodForm, categoryId: e.target.value })} required
-                  className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary">
-                  <option value="">Выберите категорию *</option>
-                  {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.parentId ? `  └ ${cat.name}` : cat.name}</option>)}
-                </select>
-                <div className="md:col-span-2 lg:col-span-3 relative">
+                <div className="relative">
                   <textarea placeholder="Описание" value={prodForm.description} onChange={(e) => setProdForm({ ...prodForm, description: e.target.value })}
-                    className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary pr-10" rows={2} />
+                    className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary pr-10" rows={3} />
                   {prodForm.name && (
                     <button type="button" title="Сгенерировать описание через ИИ-поиск" onClick={() => {
                       const query = `Напиши короткое SEO-описание товара "${prodForm.name}" для интернет-магазина, 2-3 предложения`;
                       window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, "_blank");
-                    }} className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-md transition-all hover:scale-110 cursor-pointer">
+                    }} className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-lg bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary text-white shadow-md transition-all hover:scale-110 cursor-pointer">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" /></svg>
                     </button>
                   )}
                 </div>
-                <div className="md:col-span-2 lg:col-span-3">
-                  <input type="text" placeholder="Теги / ключевые слова (через запятую)" value={prodForm.tags} onChange={(e) => setProdForm({ ...prodForm, tags: e.target.value })}
-                    className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                  <p className="text-xs text-text-gray mt-1">Мета-теги для поисковиков. Не видны клиентам на сайте.</p>
+                <div className="border border-border rounded-lg overflow-hidden">
+                  <button type="button" onClick={() => setShowMetaTags(!showMetaTags)}
+                    className="w-full flex items-center justify-between px-3 py-2 text-sm text-text-gray hover:bg-bg-light transition-colors">
+                    <span>Метатеги (SEO)</span>
+                    <svg className={`w-4 h-4 transition-transform ${showMetaTags ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {showMetaTags && (
+                    <div className="px-3 pb-3">
+                      <input type="text" placeholder="Теги / ключевые слова (через запятую)" value={prodForm.tags} onChange={(e) => setProdForm({ ...prodForm, tags: e.target.value })}
+                        className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+                      <p className="text-xs text-text-gray mt-1">Мета-теги для поисковиков. Не видны клиентам на сайте.</p>
+                    </div>
+                  )}
                 </div>
-                <div className="md:col-span-2 lg:col-span-3 flex items-center gap-4">
+                <div className="flex items-center gap-4">
                   <button type="submit" className="bg-primary hover:bg-primary-dark text-white text-sm px-6 py-2 rounded-lg">{editingProd ? "Сохранить" : "Добавить"}</button>
-                  {editingProd && <button type="button" onClick={() => { setEditingProd(null); setProdForm({ name: "", description: "", price: "", oldPrice: "", image: "", image2: "", image3: "", image4: "", inStock: "0", packSize: "", expirationDate: "", brand: "", color: "", productType: "", categoryId: "", isFeatured: false, tags: "" }); }} className="px-4 bg-bg-light text-text-gray text-sm py-2 rounded-lg">Отмена</button>}
-                  <label className="flex items-center gap-2 text-sm cursor-pointer ml-auto border border-yellow-300 bg-yellow-50 rounded-lg px-3 py-2">
-                    <input type="checkbox" checked={prodForm.isFeatured} onChange={(e) => setProdForm({ ...prodForm, isFeatured: e.target.checked })} className="accent-yellow-500 w-4 h-4" />
-                    <svg className="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                    <span className="text-yellow-700 font-medium">Популярный товар</span>
-                  </label>
+                  {editingProd && <button type="button" onClick={() => { setEditingProd(null); setProdForm({ name: "", description: "", price: "0", oldPrice: "", image: "", image2: "", image3: "", image4: "", inStock: "0", packSize: "", expirationDate: "", brand: "", color: "", productType: "", categoryId: "", isFeatured: false, tags: "" }); setShowMetaTags(false); }} className="px-4 bg-bg-light text-text-gray text-sm py-2 rounded-lg">Отмена</button>}
                 </div>
               </form>
             </div>
@@ -1208,7 +1165,7 @@ export default function AdminPage() {
                 <div className="relative">
                   <svg className="w-4 h-4 text-text-gray absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                   <input type="text" value={productSearch} onChange={(e) => { setProductSearch(e.target.value); setProdPage(1); setSelectedProducts(new Set()); }}
-                    placeholder="Поиск по названию или бренду..."
+                    placeholder="Поиск по названию..."
                     className="border border-border rounded-lg pl-9 pr-8 py-1.5 text-sm w-64 focus:outline-none focus:border-primary" />
                   {productSearch && <button onClick={() => { setProductSearch(""); setProdPage(1); }} className="absolute right-2 top-1/2 -translate-y-1/2 text-text-gray hover:text-text-dark text-lg">&times;</button>}
                 </div>
@@ -1231,11 +1188,8 @@ export default function AdminPage() {
                       </th>
                       <th className="text-left py-2 px-2 text-text-gray font-medium w-12">Фото</th>
                       <th className="text-left py-2 px-2 text-text-gray font-medium">Название</th>
+                      <th className="text-left py-2 px-2 text-text-gray font-medium">Описание</th>
                       <th className="text-left py-2 px-2 text-text-gray font-medium">Категория</th>
-                      <th className="text-right py-2 px-2 text-text-gray font-medium">Цена</th>
-                      <th className="text-right py-2 px-2 text-text-gray font-medium">В наличии</th>
-                      <th className="text-right py-2 px-2 text-text-gray font-medium">В упак.</th>
-                      <th className="text-left py-2 px-2 text-text-gray font-medium">Годен до</th>
                       <th className="text-right py-2 px-2 text-text-gray font-medium">Действия</th>
                     </tr></thead>
                     <tbody>
@@ -1252,20 +1206,16 @@ export default function AdminPage() {
                             )}
                           </td>
                           <td className="py-2 px-2 text-text-dark">
-                            {prod.isFeatured && <svg className="w-4 h-4 text-yellow-500 inline mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>}
                             {!prod.tags && <span title="Нет мета-тегов" className="inline-flex items-center justify-center w-4 h-4 bg-orange-100 text-orange-600 rounded-full text-xs font-bold mr-1 cursor-help">!</span>}
                             {prod.name}
                           </td>
+                          <td className="py-2 px-2 text-text-gray text-sm max-w-xs truncate">{prod.description || "—"}</td>
                           <td className="py-2 px-2 text-text-gray">{prod.category?.name}</td>
-                          <td className="py-2 px-2 text-right font-medium">{prod.price.toLocaleString("ru-RU")} ₽</td>
-                          <td className="py-2 px-2 text-right">{prod.inStock}</td>
-                          <td className="py-2 px-2 text-right">{prod.packSize || "—"}</td>
-                          <td className="py-2 px-2 text-text-gray text-sm">{prod.expirationDate || "—"}</td>
                           <td className="py-2 px-2 text-right whitespace-nowrap">
                             <button onClick={() => searchProduct(prod.name)} className="text-accent hover:underline mr-2" title="Поиск в интернете">
                               <svg className="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                             </button>
-                            <button onClick={() => { setEditingProd(prod); setProdForm({ name: prod.name, description: prod.description, price: String(prod.price), oldPrice: prod.oldPrice ? String(prod.oldPrice) : "", image: prod.image, image2: prod.image2 || "", image3: prod.image3 || "", image4: prod.image4 || "", inStock: String(prod.inStock), packSize: prod.packSize ? String(prod.packSize) : "", expirationDate: prod.expirationDate || "", brand: prod.brand, color: prod.color, productType: prod.productType, categoryId: prod.categoryId, isFeatured: prod.isFeatured || false, tags: prod.tags || "" }); }} className="text-primary hover:underline mr-2">Изменить</button>
+                            <button onClick={() => { setEditingProd(prod); setProdForm({ name: prod.name, description: prod.description, price: String(prod.price), oldPrice: prod.oldPrice ? String(prod.oldPrice) : "", image: prod.image, image2: prod.image2 || "", image3: prod.image3 || "", image4: prod.image4 || "", inStock: String(prod.inStock), packSize: prod.packSize ? String(prod.packSize) : "", expirationDate: prod.expirationDate || "", brand: prod.brand, color: prod.color, productType: prod.productType, categoryId: prod.categoryId, isFeatured: prod.isFeatured || false, tags: prod.tags || "" }); setShowMetaTags(!!prod.tags); }} className="text-primary hover:underline mr-2">Изменить</button>
                             <button onClick={() => deleteProduct(prod.id)} className="text-danger hover:underline">Удалить</button>
                           </td>
                         </tr>
