@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { verifyToken, getTokenFromRequest } from "@/lib/auth";
 import { slugify } from "@/lib/slugify";
+import { autoCategorize } from "@/lib/auto-categorize";
 import * as XLSX from "xlsx";
 
 function checkAdmin(request: Request): boolean {
@@ -263,7 +264,33 @@ export async function POST(request: Request) {
     const volume = row.volume != null && row.volume !== "" ? Number(row.volume) : null;
     const packSize = row.packSize != null && row.packSize !== "" ? Number(row.packSize) : null;
 
-    const categoryId = (row.category ? catByName.get(String(row.category).toLowerCase()) : undefined) || defaultCatId;
+    // Auto-detect category and brand from product name if not provided
+    let detectedBrand = brand;
+    let detectedCategoryName = row.category ? String(row.category) : "";
+    if (!detectedBrand || !detectedCategoryName) {
+      const suggestion = autoCategorize(name);
+      if (!detectedBrand && suggestion.brand) detectedBrand = suggestion.brand;
+      if (!detectedCategoryName && suggestion.category) detectedCategoryName = suggestion.category;
+    }
+
+    let categoryId = detectedCategoryName ? catByName.get(detectedCategoryName.toLowerCase()) : undefined;
+    if (!categoryId && detectedCategoryName) {
+      const catSlug = slugify(detectedCategoryName);
+      const existingCat = await prisma.category.findFirst({ where: { slug: catSlug } });
+      if (existingCat) {
+        categoryId = existingCat.id;
+        catByName.set(detectedCategoryName.toLowerCase(), existingCat.id);
+      } else {
+        const maxOrder = allCategories.reduce((max, c) => Math.max(max, c.order), 0);
+        const newCat = await prisma.category.create({
+          data: { name: detectedCategoryName, slug: catSlug, order: maxOrder + 1 },
+        });
+        categoryId = newCat.id;
+        catByName.set(detectedCategoryName.toLowerCase(), newCat.id);
+        allCategories.push(newCat);
+      }
+    }
+    if (!categoryId) categoryId = defaultCatId;
 
     const codeStr = row.code ? String(row.code) : "";
     const barcodeStr = row.barcode ? String(row.barcode) : "";
@@ -275,7 +302,7 @@ export async function POST(request: Request) {
       const updateData: Record<string, unknown> = { inStock };
       if (price > 0) updateData.price = price;
       if (oldPrice !== null) updateData.oldPrice = oldPrice;
-      if (brand) updateData.brand = brand;
+      if (detectedBrand) updateData.brand = detectedBrand;
       if (row.country) updateData.country = String(row.country);
       if (weight !== null) updateData.weight = weight;
       if (volume !== null) updateData.volume = volume;
@@ -312,7 +339,7 @@ export async function POST(request: Request) {
           description: row.description ? String(row.description) : "",
           image: row.image ? String(row.image) : "",
           inStock,
-          brand,
+          brand: detectedBrand,
           color: row.color ? String(row.color) : "",
           productType: row.productType ? String(row.productType) : "",
           country: row.country ? String(row.country) : "",
