@@ -20,8 +20,8 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://cloudstuff.ru"),
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
-    yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION || "",
+    google: "7xzsgxBohPMSWymk_1cwY1-vkYcinscTa3zkppOX5gA",
+    yandex: "e39765df5b6abb49",
   },
   title: "CloudStuff — Аксессуары для электронных устройств и вейпов",
   description: "Интернет-магазин CloudStuff — чехлы, кейсы, зарядные устройства, кабели, powerbank, аксессуары для вейпов и электронных устройств. Доставка по России.",
@@ -90,7 +90,7 @@ export default function RootLayout({
               logo: `${BASE_URL}/logo.svg`,
               contactPoint: {
                 "@type": "ContactPoint",
-                telephone: "+7-XXX-XXX-XX-XX",
+                telephone: "+7-936-256-89-50",
                 contactType: "customer service",
                 areaServed: "RU",
                 availableLanguage: "Russian",
@@ -110,7 +110,7 @@ export default function RootLayout({
               name: "CloudStuff",
               image: `${BASE_URL}/logo.svg`,
               url: BASE_URL,
-              telephone: "+7-XXX-XXX-XX-XX",
+              telephone: "+7-936-256-89-50",
               email: "info@cloudstuff.ru",
               address: {
                 "@type": "PostalAddress",
