@@ -5,82 +5,123 @@ import Footer from "@/components/Footer";
 import Link from "next/link";
 import { useState, useEffect, startTransition } from "react";
 
-interface CartProduct { name: string; price: number; image?: string; }
-interface CartItem { productId: string; quantity: number; isPack?: boolean; product: CartProduct; }
+interface LocalCartItem {
+  productId: string;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+  isPack: boolean;
+}
+
+function getCart(): LocalCartItem[] {
+  try {
+    const raw = localStorage.getItem("cart");
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function formatPhone(value: string): string {
+  const digits = value.replace(/\D/g, "");
+  const d = digits.startsWith("8") ? "7" + digits.slice(1) : digits.startsWith("7") ? digits : "7" + digits;
+  let result = "+7";
+  if (d.length > 1) result += " (" + d.slice(1, 4);
+  if (d.length >= 4) result += ")";
+  if (d.length > 4) result += " " + d.slice(4, 7);
+  if (d.length > 7) result += "-" + d.slice(7, 9);
+  if (d.length > 9) result += "-" + d.slice(9, 11);
+  return result;
+}
 
 const steps = [
   { id: 1, label: "Корзина" },
-  { id: 2, label: "Доставка" },
+  { id: 2, label: "Данные" },
   { id: 3, label: "Подтверждение" },
 ];
 
 export default function CheckoutPage() {
-  const [items, setItems] = useState<CartItem[]>([]);
-  const [token, setToken] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: "", phone: "", address: "", comment: "" });
+  const [items, setItems] = useState<LocalCartItem[]>([]);
+  const [form, setForm] = useState({ name: "", surname: "", phone: "", email: "", address: "", comment: "" });
   const [isPickup, setIsPickup] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [orderId, setOrderId] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
 
   useEffect(() => {
-    const saved = localStorage.getItem("userToken");
-    startTransition(() => setToken(saved));
+    startTransition(() => setItems(getCart()));
   }, []);
 
-  useEffect(() => {
-    if (!token) return;
-    fetch("/api/user/cart", { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.ok ? r.json() : [])
-      .then((data) => startTransition(() => setItems(data)));
-    fetch("/api/user/profile", { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.ok ? r.json() : null)
-      .then((data) => {
-        if (data) startTransition(() => setForm((f) => ({ ...f, name: data.name || "", phone: data.phone || "", address: data.address || "" })));
-      });
-  }, [token]);
-
   const total = items.reduce((sum, item) => {
-    if (item.isPack) return sum + Math.round(item.product.price * item.quantity * 0.9);
-    return sum + item.product.price * item.quantity;
+    if (item.isPack) return sum + Math.round(item.price * item.quantity * 0.9);
+    return sum + item.price * item.quantity;
   }, 0);
+
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    if (!form.name.trim()) {
+      errors.name = "Введите имя";
+    } else if (/\d/.test(form.name)) {
+      errors.name = "Имя должно содержать только буквы";
+    }
+
+    if (!form.surname.trim()) {
+      errors.surname = "Введите фамилию";
+    } else if (/\d/.test(form.surname)) {
+      errors.surname = "Фамилия должна содержать только буквы";
+    }
+
+    const phoneDigits = form.phone.replace(/\D/g, "");
+    if (!form.phone.trim()) {
+      errors.phone = "Введите телефон";
+    } else if (!phoneDigits.startsWith("79") || phoneDigits.length !== 11) {
+      errors.phone = "Формат: +7 (9XX) XXX-XX-XX";
+    }
+
+    if (!form.email.trim()) {
+      errors.email = "Введите email";
+    } else if (!form.email.includes("@") || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      errors.email = "Email должен содержать @";
+    }
+
+    if (!isPickup && (!form.address.trim() || form.address.trim().length < 10)) {
+      errors.address = "Укажите полный адрес (город, улица, дом)";
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async () => {
     setError("");
-    if (!form.name || !form.phone || (!isPickup && !form.address)) { setError("Заполните все обязательные поля"); setStep(2); return; }
-    if (!/^[\d\s\+\-\(\)]+$/.test(form.phone) || form.phone.replace(/\D/g, "").length < 10) {
-      setError("Телефон должен содержать минимум 10 цифр"); setStep(2); return;
-    }
-    if (!isPickup && form.address.trim().length < 10) {
-      setError("Укажите полный адрес (город, улица, дом)"); setStep(2); return;
-    }
+    if (!validateForm()) { setStep(2); return; }
     setLoading(true);
-    const res = await fetch("/api/user/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify(form),
-    });
-    const data = await res.json();
-    setLoading(false);
-    if (!res.ok) { setError(data.error); return; }
-    setOrderId(data.id);
+    try {
+      const res = await fetch("/api/guest-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: `${form.name.trim()} ${form.surname.trim()}`,
+          phone: form.phone,
+          email: form.email.trim(),
+          address: isPickup ? "Самовывоз" : form.address.trim(),
+          comment: form.comment.trim(),
+          items: items.map((i) => ({ productId: i.productId, quantity: i.quantity, isPack: i.isPack })),
+        }),
+      });
+      const data = await res.json();
+      setLoading(false);
+      if (!res.ok) { setError(data.error); return; }
+      setOrderId(data.id);
+      localStorage.removeItem("cart");
+      window.dispatchEvent(new Event("cart-updated"));
+    } catch {
+      setLoading(false);
+      setError("Ошибка при оформлении заказа");
+    }
   };
-
-  if (!token) {
-    return (
-      <>
-        <Header />
-        <main className="flex-1 bg-bg-light">
-          <div className="max-w-md mx-auto px-4 py-10 text-center">
-            <p className="text-text-gray mb-4">Для оформления заказа необходимо войти</p>
-            <Link href="/account" className="inline-block bg-primary text-white px-6 py-2.5 rounded-lg hover:bg-primary-dark font-medium">Войти</Link>
-          </div>
-        </main>
-        <Footer />
-      </>
-    );
-  }
 
   if (orderId) {
     return (
@@ -97,10 +138,7 @@ export default function CheckoutPage() {
               <h1 className="text-2xl font-bold text-text-dark mb-2">Заказ оформлен!</h1>
               <p className="text-text-gray mb-4">Номер заказа: #{orderId.slice(0, 8)}</p>
               <p className="text-sm text-text-gray mb-6">Мы свяжемся с вами для подтверждения</p>
-              <div className="flex gap-3 justify-center">
-                <Link href="/account" className="bg-primary text-white px-6 py-2.5 rounded-lg hover:bg-primary-dark font-medium">Мои заказы</Link>
-                <Link href="/catalog" className="border border-border px-6 py-2.5 rounded-lg hover:bg-bg-light font-medium text-text-dark">В каталог</Link>
-              </div>
+              <Link href="/catalog" className="inline-block bg-primary text-white px-6 py-2.5 rounded-lg hover:bg-primary-dark font-medium">В каталог</Link>
             </div>
           </div>
         </main>
@@ -152,39 +190,91 @@ export default function CheckoutPage() {
                     <>
                       <div className="space-y-3">
                         {items.map((item) => (
-                          <div key={item.productId} className="flex items-center gap-4 p-3 bg-bg-light rounded-lg">
+                          <div key={`${item.productId}-${item.isPack}`} className="flex items-center gap-4 p-3 bg-bg-light rounded-lg">
                             <div className="flex-1">
-                              <p className="text-sm font-medium text-text-dark">{item.product.name}</p>
-                              <p className="text-xs text-text-gray">{item.quantity} шт. × {item.product.price.toLocaleString("ru-RU")} ₽</p>
+                              <p className="text-sm font-medium text-text-dark">{item.name}</p>
+                              <p className="text-xs text-text-gray">{item.quantity} шт. × {item.price.toLocaleString("ru-RU")} ₽</p>
                             </div>
-                            <span className="font-medium text-text-dark">{(item.product.price * item.quantity).toLocaleString("ru-RU")} ₽</span>
+                            <span className="font-medium text-text-dark">{(item.price * item.quantity).toLocaleString("ru-RU")} ₽</span>
                           </div>
                         ))}
                       </div>
                       <button onClick={() => setStep(2)}
                         className="w-full mt-4 bg-primary text-white py-3 rounded-lg hover:bg-primary-dark transition-colors font-medium">
-                        Далее — Данные доставки
+                        Далее — Заполнить данные
                       </button>
                     </>
                   )}
                 </div>
               )}
 
-              {/* Step 2: Delivery info */}
+              {/* Step 2: Contact & delivery info */}
               {step === 2 && (
                 <div className="bg-bg-white rounded-xl border border-border p-4 sm:p-6">
-                  <h2 className="text-base sm:text-lg font-bold text-text-dark mb-3 sm:mb-4">Данные для доставки</h2>
+                  <h2 className="text-base sm:text-lg font-bold text-text-dark mb-3 sm:mb-4">Контактные данные</h2>
                   {error && <p className="text-danger text-sm mb-4">{error}</p>}
                   <div className="space-y-3">
-                    <div className="flex gap-2">
-                      <button onClick={() => { setIsPickup(false); setForm({ ...form, address: "" }); }}
-                        className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${!isPickup ? "bg-primary text-white" : "bg-bg-light text-text-gray border border-border"}`}>
-                        Доставка
-                      </button>
-                      <button onClick={() => { setIsPickup(true); setForm({ ...form, address: "Самовывоз: Москва, ул. Складочная, 1, стр. 18" }); }}
-                        className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${isPickup ? "bg-green-600 text-white" : "bg-bg-light text-text-gray border border-border"}`}>
-                        Самовывоз
-                      </button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-sm text-text-gray mb-1 block">Имя *</label>
+                        <input type="text" value={form.name}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[0-9]/g, "");
+                            setForm({ ...form, name: val });
+                            if (fieldErrors.name) setFieldErrors((prev) => { const n = { ...prev }; delete n.name; return n; });
+                          }}
+                          placeholder="Иван"
+                          className={`w-full border ${fieldErrors.name ? "border-danger" : "border-border"} rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary`} />
+                        {fieldErrors.name && <p className="text-danger text-xs mt-1">{fieldErrors.name}</p>}
+                      </div>
+                      <div>
+                        <label className="text-sm text-text-gray mb-1 block">Фамилия *</label>
+                        <input type="text" value={form.surname}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[0-9]/g, "");
+                            setForm({ ...form, surname: val });
+                            if (fieldErrors.surname) setFieldErrors((prev) => { const n = { ...prev }; delete n.surname; return n; });
+                          }}
+                          placeholder="Иванов"
+                          className={`w-full border ${fieldErrors.surname ? "border-danger" : "border-border"} rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary`} />
+                        {fieldErrors.surname && <p className="text-danger text-xs mt-1">{fieldErrors.surname}</p>}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm text-text-gray mb-1 block">Телефон * <span className="text-text-light">(+7 9XX XXX-XX-XX)</span></label>
+                      <input type="tel" value={form.phone}
+                        onChange={(e) => {
+                          setForm({ ...form, phone: formatPhone(e.target.value) });
+                          if (fieldErrors.phone) setFieldErrors((prev) => { const n = { ...prev }; delete n.phone; return n; });
+                        }}
+                        placeholder="+7 (9__) ___-__-__"
+                        className={`w-full border ${fieldErrors.phone ? "border-danger" : "border-border"} rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary`} />
+                      {fieldErrors.phone && <p className="text-danger text-xs mt-1">{fieldErrors.phone}</p>}
+                    </div>
+                    <div>
+                      <label className="text-sm text-text-gray mb-1 block">Email *</label>
+                      <input type="email" value={form.email}
+                        onChange={(e) => {
+                          setForm({ ...form, email: e.target.value });
+                          if (fieldErrors.email) setFieldErrors((prev) => { const n = { ...prev }; delete n.email; return n; });
+                        }}
+                        placeholder="email@example.com"
+                        className={`w-full border ${fieldErrors.email ? "border-danger" : "border-border"} rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary`} />
+                      {fieldErrors.email && <p className="text-danger text-xs mt-1">{fieldErrors.email}</p>}
+                    </div>
+
+                    <div className="border-t border-border pt-3 mt-3">
+                      <h3 className="text-sm font-medium text-text-dark mb-2">Способ получения</h3>
+                      <div className="flex gap-2">
+                        <button onClick={() => { setIsPickup(false); setForm({ ...form, address: "" }); }}
+                          className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${!isPickup ? "bg-primary text-white" : "bg-bg-light text-text-gray border border-border"}`}>
+                          Доставка
+                        </button>
+                        <button onClick={() => { setIsPickup(true); setForm({ ...form, address: "Самовывоз" }); }}
+                          className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-colors ${isPickup ? "bg-green-600 text-white" : "bg-bg-light text-text-gray border border-border"}`}>
+                          Самовывоз
+                        </button>
+                      </div>
                     </div>
                     {isPickup && (
                       <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700">
@@ -192,23 +282,17 @@ export default function CheckoutPage() {
                         <p>Пн–Пт с 11:00 до 16:00, выходной — Сб и Вск</p>
                       </div>
                     )}
-                    <div>
-                      <label className="text-sm text-text-gray mb-1 block">Имя получателя *</label>
-                      <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-                        className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary" />
-                    </div>
-                    <div>
-                      <label className="text-sm text-text-gray mb-1 block">Телефон *</label>
-                      <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                        placeholder="+7 (___) ___-__-__"
-                        className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary" />
-                    </div>
                     {!isPickup && (
-                    <div>
-                      <label className="text-sm text-text-gray mb-1 block">Адрес доставки *</label>
-                      <textarea value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })}
-                        className="w-full border border-border rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary" rows={3} />
-                    </div>
+                      <div>
+                        <label className="text-sm text-text-gray mb-1 block">Адрес доставки *</label>
+                        <textarea value={form.address}
+                          onChange={(e) => {
+                            setForm({ ...form, address: e.target.value });
+                            if (fieldErrors.address) setFieldErrors((prev) => { const n = { ...prev }; delete n.address; return n; });
+                          }}
+                          className={`w-full border ${fieldErrors.address ? "border-danger" : "border-border"} rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary`} rows={3} />
+                        {fieldErrors.address && <p className="text-danger text-xs mt-1">{fieldErrors.address}</p>}
+                      </div>
                     )}
                     <div>
                       <label className="text-sm text-text-gray mb-1 block">Комментарий</label>
@@ -219,11 +303,7 @@ export default function CheckoutPage() {
                   <div className="flex gap-3 mt-4">
                     <button onClick={() => setStep(1)} className="px-6 py-3 border border-border rounded-lg hover:bg-bg-light text-text-dark font-medium">Назад</button>
                     <button onClick={() => {
-                      setError("");
-                      if (!form.name || !form.phone || (!isPickup && !form.address)) { setError("Заполните все обязательные поля"); return; }
-                      if (!/^[\d\s\+\-\(\)]+$/.test(form.phone) || form.phone.replace(/\D/g, "").length < 10) { setError("Телефон должен содержать минимум 10 цифр"); return; }
-                      if (!isPickup && form.address.trim().length < 10) { setError("Укажите полный адрес (город, улица, дом)"); return; }
-                      setStep(3);
+                      if (validateForm()) setStep(3);
                     }} className="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-primary-dark transition-colors font-medium">
                       Далее — Подтверждение
                     </button>
@@ -238,19 +318,20 @@ export default function CheckoutPage() {
                   {error && <p className="text-danger text-sm mb-4">{error}</p>}
                   <div className="space-y-4">
                     <div className="p-4 bg-bg-light rounded-lg">
-                      <h3 className="text-sm font-medium text-text-gray mb-2">Данные получателя</h3>
-                      <p className="text-sm text-text-dark">{form.name}</p>
+                      <h3 className="text-sm font-medium text-text-gray mb-2">Данные покупателя</h3>
+                      <p className="text-sm text-text-dark">{form.name} {form.surname}</p>
                       <p className="text-sm text-text-dark">{form.phone}</p>
-                      <p className="text-sm text-text-dark">{form.address}</p>
+                      <p className="text-sm text-text-dark">{form.email}</p>
+                      <p className="text-sm text-text-dark">{isPickup ? "Самовывоз" : form.address}</p>
                       {form.comment && <p className="text-sm text-text-gray mt-1">Комментарий: {form.comment}</p>}
                       <button onClick={() => setStep(2)} className="text-primary text-sm hover:underline mt-2">Изменить</button>
                     </div>
                     <div className="p-4 bg-bg-light rounded-lg">
                       <h3 className="text-sm font-medium text-text-gray mb-2">Товары ({items.length})</h3>
                       {items.map((item) => (
-                        <div key={item.productId} className="flex justify-between text-sm text-text-dark py-1">
-                          <span>{item.product.name} × {item.quantity}</span>
-                          <span>{(item.product.price * item.quantity).toLocaleString("ru-RU")} ₽</span>
+                        <div key={`${item.productId}-${item.isPack}`} className="flex justify-between text-sm text-text-dark py-1">
+                          <span>{item.name} × {item.quantity}</span>
+                          <span>{(item.price * item.quantity).toLocaleString("ru-RU")} ₽</span>
                         </div>
                       ))}
                       <button onClick={() => setStep(1)} className="text-primary text-sm hover:underline mt-2">Изменить</button>
@@ -273,9 +354,9 @@ export default function CheckoutPage() {
                 <h2 className="text-lg font-bold text-text-dark mb-4">Ваш заказ</h2>
                 <div className="space-y-2 text-sm mb-4">
                   {items.map((item) => (
-                    <div key={item.productId} className="flex justify-between text-text-gray">
-                      <span className="truncate mr-2">{item.product.name} × {item.quantity}</span>
-                      <span className="flex-shrink-0">{(item.product.price * item.quantity).toLocaleString("ru-RU")} ₽</span>
+                    <div key={`${item.productId}-${item.isPack}`} className="flex justify-between text-text-gray">
+                      <span className="truncate mr-2">{item.name} × {item.quantity}</span>
+                      <span className="flex-shrink-0">{(item.price * item.quantity).toLocaleString("ru-RU")} ₽</span>
                     </div>
                   ))}
                 </div>

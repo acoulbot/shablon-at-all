@@ -92,10 +92,11 @@ interface Order {
   total: number;
   name: string;
   phone: string;
+  email: string;
   address: string;
   comment: string;
   createdAt: string;
-  user: { email: string; name: string };
+  user: { email: string; name: string } | null;
   items: OrderItem[];
 }
 
@@ -172,7 +173,7 @@ function OrdersPanel({ orders, statusLabels, updateOrderStatus, deleteOrder, tok
                 <div>
                   <span className="font-medium text-text-dark">#{order.id.slice(0, 8)}</span>
                   <span className="text-sm text-text-gray ml-2">{new Date(order.createdAt).toLocaleString("ru-RU")}</span>
-                  <span className="text-sm text-text-gray ml-2">— {order.user.name} ({order.user.email})</span>
+                  <span className="text-sm text-text-gray ml-2">— {order.user ? `${order.user.name} (${order.user.email})` : `${order.name} (${order.email || order.phone})`}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => toggleChat(order.id)} className={`text-sm px-3 py-1 rounded-lg border ${openChat === order.id ? "bg-primary text-white border-primary" : "border-border text-text-gray hover:text-primary"}`}>
@@ -274,6 +275,9 @@ export default function AdminPage() {
   const PROD_PER_PAGE = 10;
   const [bulkCategoryId, setBulkCategoryId] = useState("");
   const [uploadingImage, setUploadingImage] = useState<string | null>(null);
+  const [autoCatLoading, setAutoCatLoading] = useState(false);
+  const [bulkAutoCatLoading, setBulkAutoCatLoading] = useState(false);
+  const [autoCatResult, setAutoCatResult] = useState("");
   const [adminSettings, setAdminSettings] = useState({ newUsername: "", currentPassword: "", newPassword: "" });
   const [adminSettingsMsg, setAdminSettingsMsg] = useState("");
 
@@ -508,6 +512,56 @@ export default function AdminPage() {
       alert(`Обновлено ${data.updated} товаров`);
       fetchData();
     }
+  };
+
+  const autoCategorizeSingle = async () => {
+    if (!prodForm.name.trim()) return;
+    setAutoCatLoading(true);
+    setAutoCatResult("");
+    try {
+      const res = await fetch("/api/admin/auto-categorize", {
+        method: "POST",
+        headers: hdrs(),
+        body: JSON.stringify({ name: prodForm.name, tags: prodForm.tags }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const updates: Partial<typeof prodForm> = {};
+        if (data.suggestedCategoryId) updates.categoryId = data.suggestedCategoryId;
+        if (data.suggestedBrand) updates.brand = data.suggestedBrand;
+        if (Object.keys(updates).length > 0) {
+          setProdForm((prev) => ({ ...prev, ...updates }));
+          const parts = [];
+          if (data.suggestedCategory) parts.push(data.suggestedCategory);
+          if (data.suggestedBrand) parts.push(data.suggestedBrand);
+          setAutoCatResult(parts.join(" / "));
+        } else {
+          setAutoCatResult("Не удалось определить");
+        }
+      }
+    } catch { setAutoCatResult("Ошибка"); }
+    setAutoCatLoading(false);
+    setTimeout(() => setAutoCatResult(""), 4000);
+  };
+
+  const bulkAutoCategorize = async () => {
+    const ids = selectedProducts.size > 0 ? Array.from(selectedProducts) : undefined;
+    const count = ids ? ids.length : products.length;
+    if (!confirm(`Автокатегоризация ${count} товар(ов)? Категория и бренд будут определены автоматически по названию. Недостающие категории будут созданы.`)) return;
+    setBulkAutoCatLoading(true);
+    try {
+      const res = await fetch("/api/admin/auto-categorize", {
+        method: "PUT",
+        headers: hdrs(),
+        body: JSON.stringify({ ids, createMissingCategories: true }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        alert(`Обработано: ${data.total}\nОбновлено: ${data.updated}\nПропущено: ${data.skipped}\nСоздано категорий: ${data.categoriesCreated}`);
+        fetchData();
+      }
+    } catch { alert("Ошибка автокатегоризации"); }
+    setBulkAutoCatLoading(false);
   };
 
   const uploadImage = async (file: File, field: string) => {
@@ -1067,14 +1121,31 @@ export default function AdminPage() {
               <h2 className="font-bold text-text-dark mb-4">{editingProd ? "Редактировать" : "Добавить"} товар</h2>
               <form onSubmit={saveProduct} className="space-y-3">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <input type="text" placeholder="Название *" value={prodForm.name} onChange={(e) => setProdForm({ ...prodForm, name: e.target.value })} required
-                    className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
-                  <select value={prodForm.categoryId} onChange={(e) => setProdForm({ ...prodForm, categoryId: e.target.value })} required
+                  <div className="flex gap-2">
+                    <input type="text" placeholder="Название *" value={prodForm.name} onChange={(e) => setProdForm({ ...prodForm, name: e.target.value })} required
+                      className="flex-1 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary" />
+                    <button type="button" onClick={autoCategorizeSingle} disabled={autoCatLoading || !prodForm.name.trim()}
+                      title="Автоопределение категории и бренда по названию"
+                      className="bg-gradient-to-r from-accent to-primary hover:from-accent-dark hover:to-primary-dark disabled:opacity-40 text-white text-sm px-3 py-2 rounded-lg transition-all whitespace-nowrap flex items-center gap-1">
+                      {autoCatLoading ? (
+                        <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                      ) : (
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" /></svg>
+                      )}
+                      Авто
+                    </button>
+                  </div>
+                  <select value={prodForm.categoryId} onChange={(e) => setProdForm({ ...prodForm, categoryId: e.target.value })}
                     className="border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary">
-                    <option value="">Выберите категорию *</option>
+                    <option value="">Категория (авто)</option>
                     {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.parentId ? `  └ ${cat.name}` : cat.name}</option>)}
                   </select>
                 </div>
+                {autoCatResult && (
+                  <p className={`text-xs ${autoCatResult === "Не удалось определить" || autoCatResult === "Ошибка" ? "text-danger" : "text-success"}`}>
+                    {autoCatResult === "Не удалось определить" || autoCatResult === "Ошибка" ? autoCatResult : `Определено: ${autoCatResult}`}
+                  </p>
+                )}
                 <div className="border border-border rounded-lg px-3 py-2 text-sm">
                   <label className="text-text-gray text-xs block mb-1">Фото товара</label>
                   <div className="flex gap-2 items-center">
@@ -1150,6 +1221,16 @@ export default function AdminPage() {
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
                     Остаток 10 000
                   </button>
+                  <button onClick={bulkAutoCategorize} disabled={bulkAutoCatLoading}
+                    className="bg-gradient-to-r from-accent to-primary hover:from-accent-dark hover:to-primary-dark disabled:opacity-50 text-white text-sm px-3 py-1.5 rounded-lg transition-all flex items-center gap-1"
+                    title={selectedProducts.size > 0 ? `Автокатегоризация ${selectedProducts.size} выбранных` : "Автокатегоризация всех товаров"}>
+                    {bulkAutoCatLoading ? (
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" /></svg>
+                    )}
+                    {selectedProducts.size > 0 ? `Авто (${selectedProducts.size})` : "Автокатегоризация"}
+                  </button>
                   {(() => {
                     const noTagsCount = products.filter((p) => !p.tags).length;
                     return noTagsCount > 0 ? (
@@ -1189,6 +1270,7 @@ export default function AdminPage() {
                       <th className="text-left py-2 px-2 text-text-gray font-medium w-12">Фото</th>
                       <th className="text-left py-2 px-2 text-text-gray font-medium">Название</th>
                       <th className="text-left py-2 px-2 text-text-gray font-medium">Описание</th>
+                      <th className="text-left py-2 px-2 text-text-gray font-medium">Бренд</th>
                       <th className="text-left py-2 px-2 text-text-gray font-medium">Категория</th>
                       <th className="text-right py-2 px-2 text-text-gray font-medium">Действия</th>
                     </tr></thead>
@@ -1210,6 +1292,7 @@ export default function AdminPage() {
                             {prod.name}
                           </td>
                           <td className="py-2 px-2 text-text-gray text-sm max-w-xs truncate">{prod.description || "—"}</td>
+                          <td className="py-2 px-2 text-text-gray text-sm">{prod.brand || "—"}</td>
                           <td className="py-2 px-2 text-text-gray">{prod.category?.name}</td>
                           <td className="py-2 px-2 text-right whitespace-nowrap">
                             <button onClick={() => searchProduct(prod.name)} className="text-accent hover:underline mr-2" title="Поиск в интернете">

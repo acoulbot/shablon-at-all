@@ -2,6 +2,27 @@
 
 import { useState, useRef } from "react";
 
+interface LocalCartItem {
+  productId: string;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+  isPack: boolean;
+}
+
+function getCart(): LocalCartItem[] {
+  try {
+    const raw = localStorage.getItem("cart");
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function saveCart(items: LocalCartItem[]) {
+  localStorage.setItem("cart", JSON.stringify(items));
+  window.dispatchEvent(new Event("cart-updated"));
+}
+
 function flyToCart(buttonEl: HTMLElement) {
   const cartIcon = document.getElementById("cart-icon");
   if (!cartIcon) return;
@@ -22,20 +43,26 @@ function flyToCart(buttonEl: HTMLElement) {
   setTimeout(() => ghost.remove(), 700);
 }
 
-export default function AddToCartButton({ productId, inStock }: { productId: string; inStock: number }) {
+export default function AddToCartButton({ productId, inStock, productName, productPrice, productImage }: {
+  productId: string;
+  inStock: number;
+  productName?: string;
+  productPrice?: number;
+  productImage?: string;
+}) {
   const [added, setAdded] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
 
-  const addToCart = async () => {
-    const token = localStorage.getItem("userToken");
-    if (!token) { window.location.href = "/account"; return; }
-    await fetch("/api/user/cart", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ productId, quantity: 1 }),
-    });
+  const addToCart = () => {
+    const cart = getCart();
+    const existing = cart.find((i) => i.productId === productId && !i.isPack);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push({ productId, name: productName || "", price: productPrice || 0, image: productImage || "", quantity: 1, isPack: false });
+    }
+    saveCart(cart);
     if (btnRef.current) flyToCart(btnRef.current);
-    window.dispatchEvent(new Event("cart-updated"));
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -50,20 +77,27 @@ export default function AddToCartButton({ productId, inStock }: { productId: str
   );
 }
 
-export function AddPackButton({ productId, inStock, packSize, price }: { productId: string; inStock: number; packSize: number; price: number }) {
+export function AddPackButton({ productId, inStock, packSize, price, productName, productImage }: {
+  productId: string;
+  inStock: number;
+  packSize: number;
+  price: number;
+  productName?: string;
+  productImage?: string;
+}) {
   const [addedPack, setAddedPack] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
 
-  const addPack = async () => {
-    const token = localStorage.getItem("userToken");
-    if (!token) { window.location.href = "/account"; return; }
-    await fetch("/api/user/cart", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ productId, quantity: packSize, isPack: true }),
-    });
+  const addPack = () => {
+    const cart = getCart();
+    const existing = cart.find((i) => i.productId === productId && i.isPack);
+    if (existing) {
+      existing.quantity += packSize;
+    } else {
+      cart.push({ productId, name: productName || "", price, image: productImage || "", quantity: packSize, isPack: true });
+    }
+    saveCart(cart);
     if (btnRef.current) flyToCart(btnRef.current);
-    window.dispatchEvent(new Event("cart-updated"));
     setAddedPack(true);
     setTimeout(() => setAddedPack(false), 2000);
   };

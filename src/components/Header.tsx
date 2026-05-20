@@ -24,44 +24,26 @@ export default function Header() {
   const prevCartCount = useRef(0);
   const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [userLabel, setUserLabel] = useState<string | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchCart = async () => {
-      const token = localStorage.getItem("userToken");
-      if (!token) return;
+    const syncCart = () => {
       try {
-        const res = await fetch("/api/user/cart", { headers: { Authorization: `Bearer ${token}` } });
-        if (res.ok) {
-          const items = await res.json();
-          setCartCount(items.reduce((sum: number, i: { quantity: number }) => sum + i.quantity, 0));
-        }
-      } catch {}
+        const raw = localStorage.getItem("cart");
+        const items = raw ? JSON.parse(raw) as { quantity: number }[] : [];
+        setCartCount(items.reduce((sum, i) => sum + i.quantity, 0));
+      } catch { setCartCount(0); }
     };
-    fetchCart();
-    const interval = setInterval(fetchCart, 10000);
-
-    const handleCartUpdate = () => fetchCart();
+    syncCart();
+    const interval = setInterval(syncCart, 2000);
+    const handleCartUpdate = () => syncCart();
     window.addEventListener("cart-updated", handleCartUpdate);
-
     return () => { clearInterval(interval); window.removeEventListener("cart-updated", handleCartUpdate); };
   }, []);
 
-  useEffect(() => {
-    const adminToken = localStorage.getItem("admin_token");
-    const userToken = localStorage.getItem("userToken");
-    if (adminToken) {
-      setUserLabel("Админ");
-    } else if (userToken) {
-      fetch("/api/user/profile", { headers: { Authorization: `Bearer ${userToken}` } })
-        .then((r) => r.ok ? r.json() : null)
-        .then((data) => { if (data?.email) setUserLabel(data.email); })
-        .catch(() => {});
-    }
-  }, []);
+
 
   useEffect(() => {
     if (cartCount > prevCartCount.current && prevCartCount.current >= 0) {
@@ -240,13 +222,7 @@ export default function Header() {
               </div>
               <span className="text-[10px] sm:text-xs mt-0.5">Корзина</span>
             </Link>
-            <Link href="/account" className="flex flex-col items-center text-text-gray hover:text-primary transition-colors relative overflow-hidden rounded-lg px-2 py-1">
-              <Ripple />
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              <span className="text-[10px] sm:text-xs mt-0.5 max-w-[80px] truncate">{userLabel || "Вход"}</span>
-            </Link>
+
 
             {/* Mobile menu toggle */}
             <button
