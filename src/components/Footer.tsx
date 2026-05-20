@@ -21,12 +21,9 @@ export default function Footer() {
           <div>
             <h3 className="font-bold mb-3 sm:mb-4 text-sm sm:text-base">Каталог</h3>
             <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-white/75">
-              <li><Link href="/catalog" className="hover:text-white transition-colors">Все категории</Link></li>
-              <li><Link href="/catalog/chekhly-i-kejsy" className="hover:text-white transition-colors">Чехлы и кейсы</Link></li>
-              <li><Link href="/catalog/zaryadnye-ustrojstva" className="hover:text-white transition-colors">Зарядные устройства</Link></li>
-              <li><Link href="/catalog/kabeli-i-shnury" className="hover:text-white transition-colors">Кабели и шнуры</Link></li>
-              <li><Link href="/catalog/powerbank" className="hover:text-white transition-colors">Powerbank</Link></li>
-              <li><Link href="/catalog/vejp-aksessuary" className="hover:text-white transition-colors">Вейп-аксессуары</Link></li>
+              <li><Link href="/catalog" className="hover:text-white transition-colors">Все товары</Link></li>
+              <li><Link href="/wholesale" className="hover:text-white transition-colors">Оптовые продажи</Link></li>
+              <li><Link href="/news" className="hover:text-white transition-colors">Новости</Link></li>
             </ul>
           </div>
 
@@ -35,11 +32,8 @@ export default function Footer() {
             <h3 className="font-bold mb-3 sm:mb-4 text-sm sm:text-base">Информация</h3>
             <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-white/75">
               <li><Link href="/about" className="hover:text-white transition-colors">О компании</Link></li>
-              <li><Link href="/wholesale" className="hover:text-white transition-colors">Оптовые продажи</Link></li>
-              <li><Link href="/news" className="hover:text-white transition-colors">Новости</Link></li>
               <li><Link href="/returns" className="hover:text-white transition-colors">Возврат и обмен</Link></li>
               <li><Link href="/privacy" className="hover:text-white transition-colors">Политика конфиденциальности</Link></li>
-
             </ul>
           </div>
 

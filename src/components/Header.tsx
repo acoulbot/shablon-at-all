@@ -293,13 +293,9 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-6 py-2 text-sm font-medium">
             <Link href="/catalog" className="text-text-dark hover:text-primary transition-colors">Каталог</Link>
-            <Link href="/catalog/chekhly-i-kejsy" className="text-text-gray hover:text-primary transition-colors">Чехлы и кейсы</Link>
-            <Link href="/catalog/zaryadnye-ustrojstva" className="text-text-gray hover:text-primary transition-colors">Зарядки</Link>
-            <Link href="/catalog/kabeli-i-shnury" className="text-text-gray hover:text-primary transition-colors">Кабели</Link>
-            <Link href="/catalog/powerbank" className="text-text-gray hover:text-primary transition-colors">Powerbank</Link>
-            <Link href="/catalog/vejp-aksessuary" className="text-text-gray hover:text-primary transition-colors">Вейп</Link>
             <Link href="/wholesale" className="text-text-gray hover:text-primary transition-colors">Опт</Link>
             <Link href="/about" className="text-text-gray hover:text-primary transition-colors">О нас</Link>
+            <Link href="/news" className="text-text-gray hover:text-primary transition-colors">Новости</Link>
           </div>
         </div>
       </nav>
