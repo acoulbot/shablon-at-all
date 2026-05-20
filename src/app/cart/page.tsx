@@ -3,114 +3,68 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import Image from "next/image";
 import { useState, useEffect, startTransition } from "react";
-import { showToast } from "@/components/Toast";
 
-interface CartProduct {
-  id: string;
+interface LocalCartItem {
+  productId: string;
   name: string;
   price: number;
   image: string;
-  categoryId?: string;
-  brand?: string;
-  packSize?: number | null;
-}
-
-interface CartItem {
-  id: string;
-  productId: string;
   quantity: number;
   isPack: boolean;
-  product: CartProduct;
 }
 
-interface RecommendedProduct {
-  id: string;
-  name: string;
-  slug: string;
-  price: number;
-  oldPrice?: number | null;
-  image: string;
-  inStock: number;
-  category: { slug: string; name: string };
+function getCart(): LocalCartItem[] {
+  try {
+    const raw = localStorage.getItem("cart");
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function saveCart(items: LocalCartItem[]) {
+  localStorage.setItem("cart", JSON.stringify(items));
+  window.dispatchEvent(new Event("cart-updated"));
 }
 
 export default function CartPage() {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<LocalCartItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState<string | null>(null);
-  const [recommendations, setRecommendations] = useState<RecommendedProduct[]>([]);
   const [promoCode, setPromoCode] = useState("");
   const [promoDiscount, setPromoDiscount] = useState<{ code: string; discountType: string; discountValue: number } | null>(null);
   const [promoError, setPromoError] = useState("");
 
   useEffect(() => {
-    const saved = localStorage.getItem("userToken");
-    startTransition(() => setToken(saved));
+    startTransition(() => {
+      setItems(getCart());
+      setLoading(false);
+    });
   }, []);
 
-  useEffect(() => {
-    if (!token) { startTransition(() => setLoading(false)); return; }
-    fetch("/api/user/cart", { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.ok ? r.json() : [])
-      .then((data) => startTransition(() => { setItems(data); setLoading(false); }))
-      .catch(() => startTransition(() => setLoading(false)));
-  }, [token]);
-
-  useEffect(() => {
-    if (items.length === 0) { setRecommendations([]); return; }
-    const categoryIds = [...new Set(items.map((i) => i.product.categoryId).filter(Boolean))];
-    const excludeIds = items.map((i) => i.productId);
-    const params = new URLSearchParams();
-    params.set("recommend", "cart");
-    if (categoryIds.length > 0) params.set("categories", categoryIds.join(","));
-    params.set("exclude", excludeIds.join(","));
-    params.set("limit", "4");
-
-    fetch(`/api/products/recommend?${params}`)
-      .then((r) => r.ok ? r.json() : [])
-      .then((data) => startTransition(() => setRecommendations(Array.isArray(data) ? data : data ? [data] : [])))
-      .catch(() => {});
-  }, [items]);
-
-  const updateQty = async (productId: string, quantity: number, isPack: boolean) => {
-    if (!token) return;
+  const updateQty = (productId: string, quantity: number, isPack: boolean) => {
     if (quantity < 1) {
-      await fetch("/api/user/cart", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ productId, isPack }),
-      });
-      setItems((prev) => prev.filter((i) => !(i.productId === productId && i.isPack === isPack)));
+      const updated = items.filter((i) => !(i.productId === productId && i.isPack === isPack));
+      setItems(updated);
+      saveCart(updated);
     } else {
-      await fetch("/api/user/cart", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ productId, quantity, isPack }),
-      });
-      setItems((prev) => prev.map((i) => (i.productId === productId && i.isPack === isPack) ? { ...i, quantity } : i));
+      const updated = items.map((i) => (i.productId === productId && i.isPack === isPack) ? { ...i, quantity } : i);
+      setItems(updated);
+      saveCart(updated);
     }
   };
 
-  const removeItem = async (productId: string, isPack: boolean) => {
-    if (!token) return;
-    await fetch("/api/user/cart", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ productId, isPack }),
-    });
-    setItems((prev) => prev.filter((i) => !(i.productId === productId && i.isPack === isPack)));
+  const removeItem = (productId: string, isPack: boolean) => {
+    const updated = items.filter((i) => !(i.productId === productId && i.isPack === isPack));
+    setItems(updated);
+    saveCart(updated);
   };
 
-  const getItemPrice = (item: CartItem) => {
-    const unitPrice = item.product.price;
-    if (item.isPack) return Math.round(unitPrice * item.quantity * 0.9);
-    return unitPrice * item.quantity;
+  const getItemPrice = (item: LocalCartItem) => {
+    if (item.isPack) return Math.round(item.price * item.quantity * 0.9);
+    return item.price * item.quantity;
   };
 
   const subtotal = items.reduce((sum, item) => sum + getItemPrice(item), 0);
-  const packDiscount = items.filter(i => i.isPack).reduce((sum, item) => sum + Math.round(item.product.price * item.quantity * 0.1), 0);
+  const packDiscount = items.filter(i => i.isPack).reduce((sum, item) => sum + Math.round(item.price * item.quantity * 0.1), 0);
   const discountAmount = promoDiscount
     ? promoDiscount.discountType === "percent"
       ? Math.round(subtotal * promoDiscount.discountValue / 100)
@@ -130,7 +84,6 @@ export default function CartPage() {
       const data = await res.json();
       if (res.ok && data.valid) {
         setPromoDiscount({ code: data.code, discountType: data.discountType, discountValue: data.discountValue });
-        showToast("Промокод применён!");
       } else {
         setPromoError(data.error || "Недействительный промокод");
         setPromoDiscount(null);
@@ -147,18 +100,9 @@ export default function CartPage() {
         <div className="max-w-4xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
           <h1 className="text-xl sm:text-2xl font-bold text-text-dark mb-4 sm:mb-6">Корзина</h1>
 
-          {!token && (
-            <div className="bg-bg-white rounded-xl border border-border p-8 text-center">
-              <p className="text-text-gray mb-4">Для использования корзины необходимо войти в аккаунт</p>
-              <Link href="/account" className="inline-block bg-primary text-white px-6 py-2.5 rounded-lg hover:bg-primary-dark transition-colors font-medium">
-                Войти / Зарегистрироваться
-              </Link>
-            </div>
-          )}
+          {loading && <p className="text-text-gray text-center py-8">Загрузка...</p>}
 
-          {token && loading && <p className="text-text-gray text-center py-8">Загрузка...</p>}
-
-          {token && !loading && items.length === 0 && (
+          {!loading && items.length === 0 && (
             <div className="bg-bg-white rounded-xl border border-border p-8 text-center">
               <p className="text-text-gray mb-4">Корзина пуста</p>
               <Link href="/catalog" className="inline-block bg-primary text-white px-6 py-2.5 rounded-lg hover:bg-primary-dark transition-colors font-medium">
@@ -167,19 +111,23 @@ export default function CartPage() {
             </div>
           )}
 
-          {token && !loading && items.length > 0 && (
+          {!loading && items.length > 0 && (
             <>
               <div className="space-y-3">
                 {items.map((item) => (
-                  <div key={item.id} className={`bg-bg-white rounded-xl border ${item.isPack ? "border-green-300" : "border-border"} p-3 sm:p-4`}>
+                  <div key={`${item.productId}-${item.isPack}`} className={`bg-bg-white rounded-xl border ${item.isPack ? "border-green-300" : "border-border"} p-3 sm:p-4`}>
                     <div className="flex items-center gap-3 sm:gap-4">
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-bg-light rounded-lg flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">📦</div>
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-bg-light rounded-lg flex items-center justify-center text-xl sm:text-2xl flex-shrink-0">
+                        {item.image ? (
+                          <img src={item.image.startsWith("/uploads/") ? `/api${item.image}` : item.image.startsWith("/") ? `/api/static${item.image}` : item.image} alt="" className="w-full h-full object-contain p-1 rounded-lg" />
+                        ) : "📦"}
+                      </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-text-dark text-sm sm:text-base truncate">{item.product.name}</h3>
+                        <h3 className="font-medium text-text-dark text-sm sm:text-base truncate">{item.name}</h3>
                         <p className="text-xs sm:text-sm text-text-gray">
                           {item.isPack
-                            ? `🟢 ${item.product.packSize ? Math.round(item.quantity / item.product.packSize) : 1} уп. × ${item.product.packSize || item.quantity} шт. = ${item.quantity} шт. — скидка 10%`
-                            : `${item.product.price.toLocaleString("ru-RU")} ₽ за шт.`}
+                            ? `Упаковка — скидка 10%`
+                            : `${item.price.toLocaleString("ru-RU")} ₽ за шт.`}
                         </p>
                       </div>
                       <button onClick={() => removeItem(item.productId, item.isPack)} className="text-text-gray hover:text-danger transition-colors flex-shrink-0">
@@ -189,32 +137,19 @@ export default function CartPage() {
                       </button>
                     </div>
                     <div className="flex items-center justify-between mt-3 pl-[3.75rem] sm:pl-[5rem]">
-                      {item.isPack ? (
-                        <div className="flex items-center gap-2">
-                          <button onClick={() => {
-                            const ps = item.product.packSize || item.quantity;
-                            updateQty(item.productId, item.quantity - ps, true);
-                          }} className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-green-300 flex items-center justify-center hover:bg-green-50 text-sm text-green-600">−</button>
-                          <span className="w-8 sm:w-10 text-center font-medium text-sm text-green-700">
-                            {item.product.packSize ? Math.round(item.quantity / item.product.packSize) : 1} уп.
-                          </span>
-                          <button onClick={() => {
-                            const ps = item.product.packSize || item.quantity;
-                            updateQty(item.productId, item.quantity + ps, true);
-                          }} className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-green-300 flex items-center justify-center hover:bg-green-50 text-sm text-green-600">+</button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <button onClick={() => updateQty(item.productId, item.quantity - 1, false)} className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-border flex items-center justify-center hover:bg-bg-light text-sm">−</button>
-                          <span className="w-6 sm:w-8 text-center font-medium text-sm">{item.quantity}</span>
-                          <button onClick={() => updateQty(item.productId, item.quantity + 1, false)} className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-border flex items-center justify-center hover:bg-bg-light text-sm">+</button>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => updateQty(item.productId, item.quantity - 1, item.isPack)}
+                          className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg border ${item.isPack ? "border-green-300 text-green-600 hover:bg-green-50" : "border-border hover:bg-bg-light"} flex items-center justify-center text-sm`}>−</button>
+                        <span className={`w-6 sm:w-8 text-center font-medium text-sm ${item.isPack ? "text-green-700" : ""}`}>{item.quantity}</span>
+                        <button onClick={() => updateQty(item.productId, item.quantity + 1, item.isPack)}
+                          className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg border ${item.isPack ? "border-green-300 text-green-600 hover:bg-green-50" : "border-border hover:bg-bg-light"} flex items-center justify-center text-sm`}>+</button>
+                      </div>
                       <p className={`font-bold text-sm sm:text-base ${item.isPack ? "text-green-600" : "text-primary"}`}>{getItemPrice(item).toLocaleString("ru-RU")} ₽</p>
                     </div>
                   </div>
                 ))}
               </div>
+
               {/* Promo code */}
               <div className="mt-4 bg-bg-white rounded-xl border border-border p-4">
                 <div className="flex gap-2">
@@ -266,32 +201,6 @@ export default function CartPage() {
                   Оформить заказ
                 </Link>
               </div>
-              {recommendations.length > 0 && (
-                <div className="mt-6 sm:mt-8">
-                  <h2 className="text-base sm:text-lg font-bold text-text-dark mb-3 sm:mb-4">Вам также может понравиться</h2>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
-                    {recommendations.map((rec) => (
-                      <Link key={rec.id} href={`/product/${rec.slug}`} className="bg-bg-white rounded-xl border border-border p-3 hover:shadow-lg transition-shadow group">
-                        <div className="relative aspect-square mb-2 bg-bg-light rounded-lg flex items-center justify-center overflow-hidden">
-                          {rec.image ? (
-                            <Image src={rec.image} alt={rec.name} fill className="object-contain p-2 group-hover:scale-105 transition-transform" />
-                          ) : (
-                            <div className="text-text-light text-2xl">📦</div>
-                          )}
-                          {rec.oldPrice && (
-                            <span className="absolute top-1 left-1 bg-danger text-white text-xs font-bold px-1.5 py-0.5 rounded">
-                              -{Math.round(((rec.oldPrice - rec.price) / rec.oldPrice) * 100)}%
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="text-xs font-medium text-text-dark line-clamp-2 mb-1 group-hover:text-primary transition-colors">{rec.name}</h3>
-                        <p className="text-sm font-bold text-text-dark">{rec.price.toLocaleString("ru-RU")} ₽</p>
-                        <p className="text-xs text-text-gray">{rec.category.name}</p>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
             </>
           )}
         </div>

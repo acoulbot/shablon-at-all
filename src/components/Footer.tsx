@@ -39,7 +39,7 @@ export default function Footer() {
               <li><Link href="/news" className="hover:text-white transition-colors">Новости</Link></li>
               <li><Link href="/returns" className="hover:text-white transition-colors">Возврат и обмен</Link></li>
               <li><Link href="/privacy" className="hover:text-white transition-colors">Политика конфиденциальности</Link></li>
-              <li><Link href="/account" className="hover:text-white transition-colors">Личный кабинет</Link></li>
+
             </ul>
           </div>
 

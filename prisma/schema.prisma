@@ -109,12 +109,13 @@ model CartItem {
 
 model Order {
   id           String      @id @default(uuid())
-  userId       String
-  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String?
+  user         User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
   status       String      @default("new")
   total        Float
   name         String      @default("")
   phone        String      @default("")
+  email        String      @default("")
   address      String      @default("")
   comment      String      @default("")
   trackNumber  String      @default("")

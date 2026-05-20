@@ -215,7 +215,7 @@ export default async function ProductPage({ params }: PageProps) {
                 ) : (
                   <div className="space-y-2">
                     <span className="text-danger text-sm font-medium block">Нет в наличии</span>
-                    <StockAlertButton productId={product.id} />
+                    <StockAlertButton />
                   </div>
                 )}
               </div>
@@ -243,11 +243,11 @@ export default async function ProductPage({ params }: PageProps) {
               {/* Actions */}
               <div className="space-y-2 mb-3">
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <AddToCartButton productId={product.id} inStock={product.inStock} />
+                  <AddToCartButton productId={product.id} inStock={product.inStock} productName={product.name} productPrice={product.price} productImage={product.image} />
                   <CompareButton productId={product.id} productName={product.name} />
                 </div>
                 {product.packSize && product.packSize > 1 && (
-                  <AddPackButton productId={product.id} inStock={product.inStock} packSize={product.packSize} price={product.price} />
+                  <AddPackButton productId={product.id} inStock={product.inStock} packSize={product.packSize} price={product.price} productName={product.name} productImage={product.image} />
                 )}
               </div>
 

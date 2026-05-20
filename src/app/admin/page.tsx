@@ -92,10 +92,11 @@ interface Order {
   total: number;
   name: string;
   phone: string;
+  email: string;
   address: string;
   comment: string;
   createdAt: string;
-  user: { email: string; name: string };
+  user: { email: string; name: string } | null;
   items: OrderItem[];
 }
 
@@ -172,7 +173,7 @@ function OrdersPanel({ orders, statusLabels, updateOrderStatus, deleteOrder, tok
                 <div>
                   <span className="font-medium text-text-dark">#{order.id.slice(0, 8)}</span>
                   <span className="text-sm text-text-gray ml-2">{new Date(order.createdAt).toLocaleString("ru-RU")}</span>
-                  <span className="text-sm text-text-gray ml-2">— {order.user.name} ({order.user.email})</span>
+                  <span className="text-sm text-text-gray ml-2">— {order.user ? `${order.user.name} (${order.user.email})` : `${order.name} (${order.email || order.phone})`}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => toggleChat(order.id)} className={`text-sm px-3 py-1 rounded-lg border ${openChat === order.id ? "bg-primary text-white border-primary" : "border-border text-text-gray hover:text-primary"}`}>
