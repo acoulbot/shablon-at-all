@@ -79,7 +79,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
 
   return (
     <div
-      className="relative overflow-hidden group"
+      className="relative rounded-xl overflow-hidden group"
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}

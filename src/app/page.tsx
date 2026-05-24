@@ -62,8 +62,8 @@ export default async function HomePage() {
       <Header />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }} />
       <main className="flex-1">
-        {/* Hero section — full-width slider */}
-        <section className="relative">
+        {/* Hero Slider */}
+        <section className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
           <HeroSlider slides={slides} />
         </section>
 
