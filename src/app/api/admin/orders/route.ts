@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { verifyToken, getTokenFromRequest } from "@/lib/auth";
+import { sendOrderStatusUpdate } from "@/lib/email";
 
 function checkAdmin(request: Request): boolean {
   const token = getTokenFromRequest(request);
@@ -19,9 +20,32 @@ export async function GET(request: Request) {
 
 export async function PUT(request: Request) {
   if (!checkAdmin(request)) return Response.json({ error: "Нет доступа" }, { status: 401 });
-  const { id, status } = await request.json();
+  const { id, status, trackNumber, trackUrl } = await request.json();
   if (!id || !status) return Response.json({ error: "Укажите id и статус" }, { status: 400 });
-  const order = await prisma.order.update({ where: { id }, data: { status } });
+
+  const existingOrder = await prisma.order.findUnique({ where: { id } });
+  if (!existingOrder) return Response.json({ error: "Заказ не найден" }, { status: 404 });
+
+  const updateData: Record<string, string> = { status };
+  if (trackNumber !== undefined) updateData.trackNumber = trackNumber;
+  if (trackUrl !== undefined) updateData.trackUrl = trackUrl;
+
+  const order = await prisma.order.update({ where: { id }, data: updateData });
+
+  if (existingOrder.status !== status && order.email) {
+    try {
+      await sendOrderStatusUpdate(
+        order.email,
+        order.id,
+        status,
+        order.trackNumber || undefined,
+        order.trackUrl || undefined,
+      );
+    } catch (err) {
+      console.error("Order status email failed:", err);
+    }
+  }
+
   return Response.json(order);
 }
 

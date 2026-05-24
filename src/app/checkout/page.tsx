@@ -36,7 +36,8 @@ function formatPhone(value: string): string {
 const steps = [
   { id: 1, label: "Корзина" },
   { id: 2, label: "Данные" },
-  { id: 3, label: "Подтверждение" },
+  { id: 3, label: "Email" },
+  { id: 4, label: "Подтверждение" },
 ];
 
 export default function CheckoutPage() {
@@ -49,9 +50,22 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
 
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [verifyCode, setVerifyCode] = useState("");
+  const [codeSent, setCodeSent] = useState(false);
+  const [codeLoading, setCodeLoading] = useState(false);
+  const [codeError, setCodeError] = useState("");
+  const [cooldown, setCooldown] = useState(0);
+
   useEffect(() => {
     startTransition(() => setItems(getCart()));
   }, []);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown(cooldown - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
 
   const total = items.reduce((sum, item) => {
     if (item.isPack) return sum + Math.round(item.price * item.quantity * 0.9);
@@ -94,9 +108,48 @@ export default function CheckoutPage() {
     return Object.keys(errors).length === 0;
   };
 
+  const handleSendCode = async () => {
+    setCodeError("");
+    setCodeLoading(true);
+    try {
+      const res = await fetch("/api/verify-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setCodeError(data.error); setCodeLoading(false); return; }
+      setCodeSent(true);
+      setCooldown(60);
+    } catch {
+      setCodeError("Ошибка отправки кода");
+    }
+    setCodeLoading(false);
+  };
+
+  const handleVerifyCode = async () => {
+    setCodeError("");
+    setCodeLoading(true);
+    try {
+      const res = await fetch("/api/verify-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email.trim(), code: verifyCode.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setCodeError(data.error); setCodeLoading(false); return; }
+      setEmailVerified(true);
+      setStep(4);
+    } catch {
+      setCodeError("Ошибка проверки кода");
+    }
+    setCodeLoading(false);
+  };
+
   const handleSubmit = async () => {
     setError("");
     if (!validateForm()) { setStep(2); return; }
+    if (!emailVerified) { setStep(3); return; }
     setLoading(true);
     try {
       const res = await fetch("/api/guest-order", {
@@ -137,7 +190,7 @@ export default function CheckoutPage() {
               </div>
               <h1 className="text-2xl font-bold text-text-dark mb-2">Заказ оформлен!</h1>
               <p className="text-text-gray mb-4">Номер заказа: #{orderId.slice(0, 8)}</p>
-              <p className="text-sm text-text-gray mb-6">Мы свяжемся с вами для подтверждения</p>
+              <p className="text-sm text-text-gray mb-6">Мы свяжемся с вами для подтверждения. Уведомления о статусе заказа будут приходить на {form.email}</p>
               <Link href="/catalog" className="inline-block bg-primary text-white px-6 py-2.5 rounded-lg hover:bg-primary-dark font-medium">В каталог</Link>
             </div>
           </div>
@@ -257,6 +310,7 @@ export default function CheckoutPage() {
                         onChange={(e) => {
                           setForm({ ...form, email: e.target.value });
                           if (fieldErrors.email) setFieldErrors((prev) => { const n = { ...prev }; delete n.email; return n; });
+                          if (emailVerified) { setEmailVerified(false); setCodeSent(false); setVerifyCode(""); }
                         }}
                         placeholder="email@example.com"
                         className={`w-full border ${fieldErrors.email ? "border-danger" : "border-border"} rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary`} />
@@ -303,16 +357,60 @@ export default function CheckoutPage() {
                   <div className="flex gap-3 mt-4">
                     <button onClick={() => setStep(1)} className="px-6 py-3 border border-border rounded-lg hover:bg-bg-light text-text-dark font-medium">Назад</button>
                     <button onClick={() => {
-                      if (validateForm()) setStep(3);
+                      if (validateForm()) {
+                        if (emailVerified) { setStep(4); } else { setStep(3); }
+                      }
                     }} className="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-primary-dark transition-colors font-medium">
-                      Далее — Подтверждение
+                      Далее
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* Step 3: Confirmation */}
+              {/* Step 3: Email verification */}
               {step === 3 && (
+                <div className="bg-bg-white rounded-xl border border-border p-4 sm:p-6">
+                  <h2 className="text-base sm:text-lg font-bold text-text-dark mb-3 sm:mb-4">Подтверждение email</h2>
+                  <p className="text-sm text-text-gray mb-4">
+                    Для оформления заказа подтвердите вашу почту <strong className="text-text-dark">{form.email}</strong>.
+                    На неё будут приходить уведомления о статусе заказа.
+                  </p>
+                  {codeError && <p className="text-danger text-sm mb-4">{codeError}</p>}
+
+                  {!codeSent ? (
+                    <button onClick={handleSendCode} disabled={codeLoading}
+                      className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary-dark transition-colors font-medium disabled:opacity-50">
+                      {codeLoading ? "Отправляем..." : "Отправить код на email"}
+                    </button>
+                  ) : (
+                    <div className="space-y-3">
+                      <p className="text-sm text-success font-medium">Код отправлен на {form.email}</p>
+                      <div>
+                        <label className="text-sm text-text-gray mb-1 block">Введите 6-значный код</label>
+                        <input type="text" value={verifyCode} maxLength={6}
+                          onChange={(e) => setVerifyCode(e.target.value.replace(/\D/g, ""))}
+                          placeholder="000000"
+                          className="w-full border border-border rounded-lg px-4 py-3 text-center text-2xl tracking-widest font-mono focus:outline-none focus:border-primary" />
+                      </div>
+                      <button onClick={handleVerifyCode} disabled={codeLoading || verifyCode.length !== 6}
+                        className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary-dark transition-colors font-medium disabled:opacity-50">
+                        {codeLoading ? "Проверяем..." : "Подтвердить"}
+                      </button>
+                      <button onClick={handleSendCode} disabled={codeLoading || cooldown > 0}
+                        className="w-full text-sm text-primary hover:underline disabled:text-text-gray disabled:no-underline">
+                        {cooldown > 0 ? `Отправить повторно через ${cooldown} сек` : "Отправить код повторно"}
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="flex gap-3 mt-4">
+                    <button onClick={() => setStep(2)} className="px-6 py-3 border border-border rounded-lg hover:bg-bg-light text-text-dark font-medium">Назад</button>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 4: Confirmation */}
+              {step === 4 && (
                 <div className="bg-bg-white rounded-xl border border-border p-4 sm:p-6">
                   <h2 className="text-base sm:text-lg font-bold text-text-dark mb-3 sm:mb-4">Подтверждение заказа</h2>
                   {error && <p className="text-danger text-sm mb-4">{error}</p>}
@@ -321,7 +419,7 @@ export default function CheckoutPage() {
                       <h3 className="text-sm font-medium text-text-gray mb-2">Данные покупателя</h3>
                       <p className="text-sm text-text-dark">{form.name} {form.surname}</p>
                       <p className="text-sm text-text-dark">{form.phone}</p>
-                      <p className="text-sm text-text-dark">{form.email}</p>
+                      <p className="text-sm text-text-dark">{form.email} <span className="text-success text-xs ml-1">подтверждён</span></p>
                       <p className="text-sm text-text-dark">{isPickup ? "Самовывоз" : form.address}</p>
                       {form.comment && <p className="text-sm text-text-gray mt-1">Комментарий: {form.comment}</p>}
                       <button onClick={() => setStep(2)} className="text-primary text-sm hover:underline mt-2">Изменить</button>
@@ -338,7 +436,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <div className="flex gap-3 mt-4">
-                    <button onClick={() => setStep(2)} className="px-6 py-3 border border-border rounded-lg hover:bg-bg-light text-text-dark font-medium">Назад</button>
+                    <button onClick={() => setStep(3)} className="px-6 py-3 border border-border rounded-lg hover:bg-bg-light text-text-dark font-medium">Назад</button>
                     <button onClick={handleSubmit} disabled={loading || items.length === 0}
                       className="flex-1 bg-primary text-white py-3 rounded-lg hover:bg-primary-dark transition-colors font-medium disabled:opacity-50">
                       {loading ? "Оформляем..." : "Подтвердить заказ"}
