@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { sendAdminNewOrder } from "@/lib/email";
 
 interface GuestCartItem {
   productId: string;
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
 
   let total = 0;
   const orderItems: { productId: string; quantity: number; price: number }[] = [];
+  const emailItems: { name: string; quantity: number; price: number }[] = [];
 
   for (const item of items) {
     const product = productMap.get(item.productId);
@@ -59,6 +61,11 @@ export async function POST(req: NextRequest) {
       productId: item.productId,
       quantity: item.quantity,
       price: product.price,
+    });
+    emailItems.push({
+      name: product.name,
+      quantity: item.quantity,
+      price,
     });
   }
 
@@ -75,6 +82,12 @@ export async function POST(req: NextRequest) {
       },
     },
   });
+
+  try {
+    await sendAdminNewOrder(order.id, name, phone, email, address || "Не указан", emailItems, total);
+  } catch (err) {
+    console.error("Admin email notification failed:", err);
+  }
 
   return NextResponse.json({ success: true, id: order.id });
 }
