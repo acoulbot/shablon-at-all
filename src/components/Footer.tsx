@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import { EditableText } from "@/components/InlineEdit";
 
 export default function Footer() {
   return (
@@ -12,9 +15,13 @@ export default function Footer() {
               <Image src="/logo.svg" alt="CloudStuff" width={40} height={40} className="w-10 h-10 drop-shadow-md rounded-lg" />
               <span className="text-lg font-bold">CloudStuff</span>
             </div>
-            <p className="text-white/75 text-sm">
-              Интернет-магазин аксессуаров для электронных устройств и вейпов: чехлы, кейсы, зарядки, кабели, powerbank и многое другое. Качество и надёжность.
-            </p>
+            <EditableText
+              contentKey="footer_description"
+              defaultValue="Интернет-магазин аксессуаров для электронных устройств и вейпов: чехлы, кейсы, зарядки, кабели, powerbank и многое другое. Качество и надёжность."
+              as="p"
+              className="text-white/75 text-sm"
+              multiline
+            />
           </div>
 
           {/* Catalog */}
@@ -41,9 +48,9 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1">
             <h3 className="font-bold mb-3 sm:mb-4 text-sm sm:text-base">Контакты</h3>
             <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-white/75">
-              <p><a href="mailto:info@cloudstuff.ru" className="hover:text-white transition-colors break-all">info@cloudstuff.ru</a></p>
-              <p>Доставка по всей России</p>
-              <p>ПН-ВС с 10:00 до 22:00</p>
+              <EditableText contentKey="footer_email" defaultValue="info@cloudstuff.ru" as="p" className="hover:text-white transition-colors break-all" />
+              <EditableText contentKey="footer_delivery_note" defaultValue="Доставка по всей России" as="p" className="" />
+              <EditableText contentKey="footer_hours" defaultValue="ПН-ВС с 10:00 до 22:00" as="p" className="" />
             </div>
           </div>
         </div>
@@ -70,10 +77,13 @@ export default function Footer() {
         {/* Legal info */}
         <div className="border-t border-white/10 mt-8 pt-6 text-xs text-white/55 space-y-2">
           <p>&copy; {new Date().getFullYear()} CloudStuff. Все права защищены.</p>
-          <p className="text-white/45">
-            Информация на сайте не является публичной офертой. Изображения товаров могут отличаться от фактического вида.
-            Все цены указаны в рублях. Продукция предназначена для лиц старше 18 лет.
-          </p>
+          <EditableText
+            contentKey="footer_legal"
+            defaultValue="Информация на сайте не является публичной офертой. Изображения товаров могут отличаться от фактического вида. Все цены указаны в рублях. Продукция предназначена для лиц старше 18 лет."
+            as="p"
+            className="text-white/45"
+            multiline
+          />
         </div>
       </div>
     </footer>

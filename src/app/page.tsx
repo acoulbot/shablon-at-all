@@ -5,6 +5,14 @@ import ProductCard from "@/components/ProductCard";
 import ScrollReveal from "@/components/ScrollReveal";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import {
+  EditableHero,
+  SortableCategories,
+  SortableSlider,
+  EditableAdvantages,
+  EditableCTA,
+  EditableAgeNotice,
+} from "@/components/EditableSection";
 
 export const revalidate = 60;
 
@@ -64,37 +72,15 @@ export default async function HomePage() {
       <main className="flex-1">
         {/* Hero Slider */}
         <section className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
-          <HeroSlider slides={slides} />
+          <SortableSlider slides={slides.map((s) => ({ ...s, order: s.order ?? 0, active: s.active ?? true }))}>
+            <HeroSlider slides={slides} />
+          </SortableSlider>
         </section>
 
         {/* Brand headline + CTA */}
         <ScrollReveal>
           <section className="max-w-7xl mx-auto px-3 sm:px-4 py-8 sm:py-12">
-            <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-text-dark via-[#3A3A3A] to-text-dark p-6 sm:p-10 md:p-14 text-center">
-              <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -top-20 -left-20 w-60 h-60 bg-primary/20 rounded-full blur-3xl animate-float" />
-                <div className="absolute -bottom-20 -right-20 w-48 h-48 bg-accent/20 rounded-full blur-3xl animate-float" style={{ animationDelay: "2s" }} />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-rotate-slow" />
-              </div>
-              <div className="relative z-10">
-                <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4 sm:mb-5">
-                  <span className="bg-gradient-to-r from-primary-light via-white to-primary-light bg-clip-text text-transparent">CloudStuff</span>
-                  <br />
-                  <span className="text-white/90 text-xl sm:text-2xl md:text-3xl font-bold">Аксессуары для ваших устройств</span>
-                </h1>
-                <p className="text-white/60 text-sm sm:text-base md:text-lg max-w-2xl mx-auto mb-6 sm:mb-8 leading-relaxed">
-                  Pod-системы, картриджи, испарители и аксессуары от ведущих брендов. Качество и быстрая доставка по всей России.
-                </p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-                  <Link href="/catalog" className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-bold px-10 py-3.5 rounded-xl transition-all text-sm sm:text-base shadow-lg hover:shadow-xl hover:shadow-primary/30 animate-glow-pulse hover:-translate-y-0.5">
-                    Перейти в каталог
-                  </Link>
-                  <Link href="/wholesale" className="w-full sm:w-auto border-2 border-white/30 text-white hover:bg-white/10 font-bold px-10 py-3.5 rounded-xl transition-all text-sm sm:text-base hover:-translate-y-0.5">
-                    Оптовым клиентам
-                  </Link>
-                </div>
-              </div>
-            </div>
+            <EditableHero />
           </section>
         </ScrollReveal>
 
@@ -118,7 +104,7 @@ export default async function HomePage() {
           </section>
         </ScrollReveal>
 
-        {/* Categories — dynamic from DB */}
+        {/* Categories — dynamic from DB with drag-and-drop reorder */}
         {categories.length > 0 && (
           <ScrollReveal>
             <section className="max-w-7xl mx-auto px-3 sm:px-4 py-6 sm:py-10">
@@ -126,24 +112,13 @@ export default async function HomePage() {
                 <h2 className="font-heading text-xl sm:text-3xl font-bold text-text-dark mb-2">Категории товаров</h2>
                 <p className="text-text-gray text-sm sm:text-base">Выберите интересующий раздел</p>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-                {categories.map((cat, i) => (
-                  <Link
-                    key={cat.id}
-                    href={`/catalog/${cat.slug}`}
-                    className="group bg-bg-white rounded-xl border border-border p-4 sm:p-6 text-center hover:shadow-lg hover:border-primary/30 transition-all hover-lift"
-                    style={{ animationDelay: `${i * 100}ms` }}
-                  >
-                    <span className="text-3xl sm:text-4xl block mb-3 group-hover:scale-110 transition-transform">
-                      {cat.icon && !(cat.icon.startsWith("/") || cat.icon.startsWith("http")) ? cat.icon : "📦"}
-                    </span>
-                    <h3 className="font-heading text-sm sm:text-base font-bold text-text-dark group-hover:text-primary transition-colors mb-1">
-                      {cat.name}
-                    </h3>
-                    <span className="text-xs text-text-gray">{cat._count.products} товаров</span>
-                  </Link>
-                ))}
-              </div>
+              <SortableCategories categories={categories.map((c) => ({
+                id: c.id,
+                name: c.name,
+                slug: c.slug,
+                icon: c.icon,
+                _count: c._count,
+              }))} />
             </section>
           </ScrollReveal>
         )}
@@ -234,27 +209,7 @@ export default async function HomePage() {
         {/* Advantages banner */}
         <ScrollReveal>
           <section className="max-w-7xl mx-auto px-3 sm:px-4 py-6 sm:py-10">
-            <div className="bg-gradient-to-br from-bg-white to-primary/[0.04] rounded-2xl border border-border p-5 sm:p-8">
-              <h2 className="font-heading text-lg sm:text-2xl font-bold text-text-dark text-center mb-5 sm:mb-8">Почему CloudStuff?</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                {[
-                  { icon: "🚚", title: "Быстрая доставка", desc: "По всей России от 1 дня" },
-                  { icon: "✅", title: "Оригинальная продукция", desc: "Гарантия подлинности товара" },
-                  { icon: "💬", title: "Поддержка 24/7", desc: "Ответим на любые вопросы" },
-                  { icon: "🔄", title: "Возврат 14 дней", desc: "Без лишних вопросов" },
-                ].map((item, i) => (
-                  <div
-                    key={item.title}
-                    className="text-center group"
-                    style={{ animationDelay: `${i * 100}ms` }}
-                  >
-                    <span className="text-3xl sm:text-4xl block mb-3 group-hover:scale-110 transition-transform">{item.icon}</span>
-                    <h3 className="font-heading text-sm sm:text-base font-bold text-text-dark mb-1">{item.title}</h3>
-                    <p className="text-xs sm:text-sm text-text-gray leading-relaxed">{item.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <EditableAdvantages />
           </section>
         </ScrollReveal>
 
@@ -293,32 +248,13 @@ export default async function HomePage() {
         {/* CTA bottom banner */}
         <ScrollReveal>
           <section className="max-w-7xl mx-auto px-3 sm:px-4 py-6 sm:py-10">
-            <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-primary to-primary-dark p-6 sm:p-10 text-center">
-              <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
-                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
-              </div>
-              <div className="relative z-10">
-                <h2 className="font-heading text-xl sm:text-3xl font-bold text-white mb-3">Не нашли нужный товар?</h2>
-                <p className="text-white/80 text-sm sm:text-base mb-5 max-w-lg mx-auto">Свяжитесь с нами — подберём подходящий вариант или закажем специально для вас</p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <a href="https://t.me/cloudstuff_ru" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto bg-white text-primary font-bold px-8 py-3 rounded-xl transition-all hover:shadow-lg hover:-translate-y-0.5 text-sm sm:text-base">
-                    Написать в Telegram
-                  </a>
-                  <Link href="/catalog" className="w-full sm:w-auto border-2 border-white/40 text-white font-bold px-8 py-3 rounded-xl transition-all hover:bg-white/10 hover:-translate-y-0.5 text-sm sm:text-base">
-                    Смотреть каталог
-                  </Link>
-                </div>
-              </div>
-            </div>
+            <EditableCTA />
           </section>
         </ScrollReveal>
 
         {/* Age verification */}
         <section className="max-w-7xl mx-auto px-3 sm:px-4 pb-8 sm:pb-12">
-          <div className="bg-text-dark/5 rounded-xl p-4 sm:p-5 text-center border border-border">
-            <p className="text-xs sm:text-sm text-text-gray">Продукция предназначена для лиц старше 18 лет. Приобретая товары на сайте, вы подтверждаете своё совершеннолетие.</p>
-          </div>
+          <EditableAgeNotice />
         </section>
       </main>
       <Footer />
