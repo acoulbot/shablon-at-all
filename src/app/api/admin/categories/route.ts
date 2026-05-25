@@ -56,6 +56,27 @@ export async function PUT(request: Request) {
   return Response.json(category);
 }
 
+export async function PATCH(request: Request) {
+  if (!checkAdmin(request)) return Response.json({ error: "Нет доступа" }, { status: 401 });
+
+  const { orderedIds } = await request.json();
+  if (!Array.isArray(orderedIds)) {
+    return Response.json({ error: "orderedIds обязателен" }, { status: 400 });
+  }
+
+  await Promise.all(
+    orderedIds.map((id: string, index: number) =>
+      prisma.category.update({ where: { id }, data: { order: index } })
+    )
+  );
+
+  const categories = await prisma.category.findMany({
+    orderBy: { order: "asc" },
+    include: { _count: { select: { products: true } } },
+  });
+  return Response.json(categories);
+}
+
 export async function DELETE(request: Request) {
   if (!checkAdmin(request)) return Response.json({ error: "Нет доступа" }, { status: 401 });
 

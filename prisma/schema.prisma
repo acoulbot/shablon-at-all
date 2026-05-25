@@ -159,6 +159,13 @@ model SitePage {
   updatedAt DateTime @updatedAt
 }
 
+model SiteContent {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   @default("")
+  updatedAt DateTime @updatedAt
+}
+
 model Review {
   id        String   @id @default(uuid())
   productId String

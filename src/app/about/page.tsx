@@ -4,6 +4,7 @@ import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { EditableAboutHero, EditableValues, EditableAboutText } from "@/components/EditableAbout";
 
 
 export const revalidate = 60;
@@ -49,57 +50,18 @@ export default async function AboutPage() {
             {aboutPage?.content ? (
               <div className="text-text-gray leading-relaxed space-y-4 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: aboutPage.content }} />
             ) : (
-              <div className="text-text-gray leading-relaxed space-y-4">
-                <p className="text-lg text-text-dark">
-                  CloudStuff — современный интернет-магазин аксессуаров для электронных устройств и вейпов. Мы предлагаем широкий ассортимент чехлов, кейсов, зарядных устройств, кабелей, powerbank, защитных стёкол и вейп-аксессуаров — всё для ваших устройств в одном месте.
-                </p>
-                <p>
-                  Мы работаем только с проверенными брендами и поставщиками, гарантируя оригинальность каждого товара. Наша цель — предоставить клиенту удобный сервис с быстрой доставкой, честными ценами и профессиональной поддержкой. Мы постоянно расширяем ассортимент и предлагаем индивидуальные условия для оптовых покупателей.
-                </p>
-              </div>
+              <EditableAboutHero />
             )}
           </div>
 
           {/* Values */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-            <div className="bg-bg-white rounded-xl border border-border p-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">&#127919;</span>
-              </div>
-              <h3 className="font-bold text-text-dark mb-2">Наша цель</h3>
-              <p className="text-sm text-text-gray">Стать ведущей площадкой аксессуаров для электроники с лучшим ассортиментом и сервисом по честным ценам.</p>
-            </div>
-            <div className="bg-bg-white rounded-xl border border-border p-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">&#129309;</span>
-              </div>
-              <h3 className="font-bold text-text-dark mb-2">Наш подход</h3>
-              <p className="text-sm text-text-gray">Только оригинальная продукция, быстрая доставка и профессиональная консультация по каждому товару.</p>
-            </div>
-            <div className="bg-bg-white rounded-xl border border-border p-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                <span className="text-2xl">&#11088;</span>
-              </div>
-              <h3 className="font-bold text-text-dark mb-2">Наша особенность</h3>
-              <p className="text-sm text-text-gray">Широкий ассортимент от ведущих брендов и индивидуальные условия для оптовых партнёров.</p>
-            </div>
+          <div className="mb-6 sm:mb-8">
+            <EditableValues />
           </div>
 
           {/* About text */}
-          <div className="bg-bg-white rounded-xl border border-border p-4 sm:p-6 md:p-8 mb-6 sm:mb-8">
-            <h2 className="text-lg sm:text-xl font-bold text-text-dark mb-3 sm:mb-4">{aboutPage?.title || "О нас"}</h2>
-            {aboutPage?.content ? (
-              <div className="text-text-gray leading-relaxed space-y-4 prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: aboutPage.content }} />
-            ) : (
-              <div className="text-text-gray leading-relaxed space-y-4">
-                <p>
-                  Наш ассортимент охватывает все ключевые категории электронных аксессуаров — от чехлов и защитных стёкол до зарядных устройств, кабелей и powerbank. Мы постоянно расширяем линейку и следим за новинками рынка.
-                </p>
-                <p>
-                  Продажи ведутся через онлайн-платформу с удобной системой доставок/самовывозов и возможностью оптового сотрудничества.
-                </p>
-              </div>
-            )}
+          <div className="mb-6 sm:mb-8">
+            <EditableAboutText title={aboutPage?.title || undefined} content={aboutPage?.content || undefined} />
           </div>
 
           {/* Delivery */}
