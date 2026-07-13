@@ -67,12 +67,21 @@ export function SortableCategories({ categories }: { categories: CategoryItem[] 
           key={cat.id}
           href={editing ? "#" : `/catalog/${cat.slug}`}
           onClick={editing ? (e) => e.preventDefault() : undefined}
-          className="group bg-bg-white rounded-xl border border-border p-4 sm:p-6 text-center hover:shadow-lg hover:border-primary/30 transition-all hover-lift"
+          className="block h-full group bg-bg-white rounded-xl border border-border p-4 sm:p-6 text-center hover:shadow-lg hover:border-primary/30 transition-all hover-lift"
           style={{ animationDelay: `${i * 100}ms` }}
         >
-          <span className="text-3xl sm:text-4xl block mb-3 group-hover:scale-110 transition-transform">
-            {cat.icon && !(cat.icon.startsWith("/") || cat.icon.startsWith("http")) ? cat.icon : "📦"}
-          </span>
+          {cat.icon && (cat.icon.startsWith("/") || cat.icon.startsWith("http")) ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={cat.icon}
+              alt={cat.name}
+              className="w-12 h-12 sm:w-14 sm:h-14 object-contain mx-auto mb-3 group-hover:scale-110 transition-transform"
+            />
+          ) : (
+            <span className="text-3xl sm:text-4xl block mb-3 group-hover:scale-110 transition-transform">
+              {cat.icon || "📦"}
+            </span>
+          )}
           <h3 className="font-heading text-sm sm:text-base font-bold text-text-dark group-hover:text-primary transition-colors mb-1">
             {cat.name}
           </h3>
