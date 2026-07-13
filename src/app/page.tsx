@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import HeroSlider from "@/components/HeroSlider";
 import ProductCard from "@/components/ProductCard";
 import ScrollReveal from "@/components/ScrollReveal";
 import Link from "next/link";
@@ -8,7 +7,6 @@ import { prisma } from "@/lib/prisma";
 import {
   EditableHero,
   SortableCategories,
-  SortableSlider,
   EditableAdvantages,
   EditableCTA,
   EditableAgeNotice,
@@ -20,8 +18,7 @@ export default async function HomePage() {
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-  const [slides, categories, featuredProducts, newProducts, saleProducts, reviews, totalProducts] = await Promise.all([
-    prisma.sliderImage.findMany({ where: { active: true }, orderBy: { order: "asc" } }),
+  const [categories, featuredProducts, newProducts, saleProducts, reviews, totalProducts] = await Promise.all([
     prisma.category.findMany({
       where: { parentId: null },
       orderBy: { order: "asc" },
@@ -70,13 +67,6 @@ export default async function HomePage() {
       <Header />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }} />
       <main className="flex-1">
-        {/* Hero Slider */}
-        <section className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
-          <SortableSlider slides={slides.map((s) => ({ ...s, order: s.order ?? 0, active: s.active ?? true }))}>
-            <HeroSlider slides={slides} />
-          </SortableSlider>
-        </section>
-
         {/* Brand headline + CTA */}
         <ScrollReveal>
           <section className="max-w-7xl mx-auto px-3 sm:px-4 py-8 sm:py-12">
